@@ -1,5 +1,5 @@
 <template>
   <div>
-    <NuxtPage />
+    <h1>Jam Loops</h1>
   </div>
 </template>
