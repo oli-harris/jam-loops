@@ -1,17 +1,29 @@
-<!-- Desktop only site -->
 <template>
-  <div class="flex flex-col min-h-screen">
-    <header class="px-8 py-4 bg-stone-950">
-      <Toolbar />
-    </header>
-    <div class="flex flex-1 h-full">
-      <aside class="w-64 bg-stone-950 border-r-2 border-rose-950">
-        <LoopsSideview />
-      </aside>
-      <main class="flex-1 bg-stone-900 border-t-2 border-rose-950"></main>
-      <!-- <aside class="w-64 bg-stone-900 border-t-2 border-l-2 border-rose-950">
-        <TimelineSideview />
-      </aside> -->
-      </div>
+  <!-- Warning if not viewed on a widescreen -->
+  <div class="absolute z-50 top-0 left-0 h-screen w-screen flex justify-center items-center bg-stone-950" :class="{hidden: isOnDesktop}">
+    <div class="text-xl text-rose-700 font-poppins">This app is desktop only.</div>
   </div>
+
+  <LoopsApp />
 </template>
+
+<script lang="ts">
+  export default defineComponent({
+    data() {
+      return {
+        isOnDesktop: true,
+      }
+    },
+    mounted() {
+      window.addEventListener("resize", this.handleResize);
+    },
+    methods: {
+      handleResize() {
+        this.isOnDesktop = (window.innerWidth / window.innerHeight > 1)
+      },
+      beat() {
+        
+      }
+    }
+  });
+</script>
