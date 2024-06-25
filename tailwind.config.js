@@ -16,6 +16,4 @@ export default {
     },
     extend: {},
   },
-  plugins: [],
-}
-
+};
