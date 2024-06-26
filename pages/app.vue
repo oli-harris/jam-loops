@@ -9,10 +9,12 @@
     </div>
   </div>
 
-  <LoopsApp />
+  <App />
 </template>
 
 <script lang="ts">
+import App from "~/components/App.vue";
+
 export default defineComponent({
   data() {
     return {

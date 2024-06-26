@@ -2,13 +2,13 @@
   <div class="grid grid-cols-3 items-center px-6 py-3 font-poppins">
     <div class="flex flex-row items-center justify-self-start">
       <AnimateHover :animateOnStart="true" animation="animate__rubberBand">
-        <div class="mr-4 text-5xl font-black text-rose-800">JAM</div>
+        <div class="mr-4 text-5xl font-black text-rose-600">JAM</div>
       </AnimateHover>
-      <div class="text-lg text-rose-700">My Project</div>
+      <div class="text-lg text-rose-600">My Project</div>
     </div>
-    <div class="justify-self-center text-rose-700">
+    <div class="justify-self-center text-rose-100">
       120bpm Metranome | Play Volume
     </div>
-    <div class="justify-self-end text-rose-700">Balls</div>
+    <div class="justify-self-end text-rose-700">Saved ✓</div>
   </div>
 </template>
