@@ -7,8 +7,32 @@
       <div class="text-lg text-rose-600">My Project</div>
     </div>
     <div class="justify-self-center text-rose-100">
-      120bpm Metranome | Play Volume
+      <div class="flex flex-row gap-3">
+        <div>120bpm</div>
+        <div>Metranome</div>
+        <div>|</div>
+        <div @click="togglePlay">Play</div>
+        <div>Volume</div>
+      </div>
     </div>
     <div class="justify-self-end text-rose-700">Saved ✓</div>
   </div>
 </template>
+
+<script lang="ts">
+export default defineComponent({
+  data() {
+    return {
+      playing: false,
+      controllerStore: useControllerStore(),
+    };
+  },
+  methods: {
+    togglePlay() {
+      if (this.controllerStore.playing) return this.controllerStore.stop();
+
+      this.controllerStore.play();
+    },
+  },
+});
+</script>

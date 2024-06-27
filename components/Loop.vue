@@ -235,7 +235,9 @@ export default defineComponent({
       if (note) return this.trackNoteElements[track][beat].classList.add("disabled");
       this.trackNoteElements[track][beat].classList.remove("disabled");
     },
-    onBeat(beat: number) {
+    onBeat() {
+      const beat = this.loop.currentBeat;
+      console.log(beat);
       // Add class onBeat to sectors in current track
       this.trackArcElements[beat].classList.add("onBeat");
 

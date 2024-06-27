@@ -1,5 +1,3 @@
-import { defineStore } from "pinia";
-
 export const useLoopsStore = defineStore({
   id: "loopsStore",
   state: () => ({
@@ -8,12 +6,24 @@ export const useLoopsStore = defineStore({
   getters: {
     positionedLoops(): Loop[] {
       // Returns an array of loops sorted by position
-
-      const loops = Object.values(this.loops);
+      const loops = this.loopsArray;
 
       loops.sort((a, b) => a.position - b.position);
 
       return loops;
+    },
+    loopsArray(): Loop[] {
+      const loops = Object.values(this.loops);
+
+      return loops;
+    },
+    getAllRhythms(): { beatCount: number; uuid: string }[] {
+      // Seperates different loops of same beatcount into object and list of uuids
+      const loops = this.loopsArray;
+
+      const rhythms = loops.map((loop) => ({ beatCount: loop.beatCount, uuid: loop.uuid }));
+
+      return rhythms;
     },
   },
   actions: {
@@ -25,6 +35,7 @@ export const useLoopsStore = defineStore({
       const newLoop = {
         uuid: uuid,
         onBeat: () => {},
+        currentBeat: 0,
         position: Object.keys(this.loops).length,
         loopTitle: loopTitle,
         beatCount: beatCount,
@@ -58,10 +69,11 @@ export interface Loops {
 
 export interface Loop {
   uuid: string;
-  onBeat: (beat: number) => void; // Beat indexed from 0
-  position: number; // Zero index position
+  onBeat: () => void; // Beat indexed from 0
+  position: number; // Zero index position in grid
   loopTitle: string; // Name of loop
   beatCount: number; // Number of beats
+  currentBeat: number;
   trackCount: number; // Number of tracks
   tracksData: Track[]; // Contents of each track, starting from outer track
 }

@@ -17,22 +17,34 @@
 </template>
 
 <script lang="ts">
-import { useLoopsStore } from "#imports";
+import { Tone } from "tone/build/esm/core/Tone";
 
 export default defineComponent({
   data() {
     return {
       loopsStore: useLoopsStore(),
+      controlStore: useControllerStore(),
     };
   },
   mounted() {
     this.saturateLoops();
+    this.inititate();
   },
   methods: {
     saturateLoops() {
       this.loopsStore.addEmptyLoop("Drums", 8, 2);
       this.loopsStore.addEmptyLoop("Hihats", 3, 3);
       this.loopsStore.addEmptyLoop("Glorbs", 5, 1);
+    },
+    inititate() {
+      // On play
+      watch(
+        () => this.controlStore.playing,
+        (newValue: boolean, oldValue: boolean) => {
+          if (newValue && newValue != oldValue) this.controlStore.play();
+          if (!newValue && newValue != oldValue) this.controlStore.stop();
+        },
+      );
     },
   },
 });
