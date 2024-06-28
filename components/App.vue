@@ -1,12 +1,12 @@
 <template>
   <div class="flex h-screen select-none flex-col overflow-hidden font-poppins">
     <header class="bg-stone-950">
-      <Toolbar />
+      <ControlBar />
     </header>
 
     <div class="flex h-full flex-1">
       <aside class="w-[66] border-r-2 border-rose-950 bg-stone-950">
-        <LoopsSideview />
+        <SidebarMain />
       </aside>
 
       <main class="flex-1 border-t-2 border-rose-950 bg-stone-900">

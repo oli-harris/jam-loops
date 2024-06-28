@@ -5,7 +5,7 @@ export const useControllerStore = defineStore({
   id: "controllerStore",
   state: () => ({
     playing: false,
-    tempo: 60,
+    tempo: 120,
     volume: 0.8, // Percentage volume
     beatsPerMeasure: 4, // Represents numerator in time signature
   }),
@@ -14,13 +14,24 @@ export const useControllerStore = defineStore({
       if (this.playing) return;
       this.playing = true;
 
+      // Rebinds beats each time to ensure state correct
       this.bindBeats();
+
+      // Start tone.js
+      getTransport().bpm.value = this.tempo;
       getTransport().start();
     },
     stop() {
       if (!this.playing) return;
-
       this.playing = false;
+
+      // Stops tone.js
+      getTransport().stop();
+      getTransport().cancel();
+
+      useLoopsStore().loopsArray.forEach((e) => {
+        e.currentBeat = 0;
+      });
     },
     bindBeats() {
       const beatDuration = (beats: number): number => {
@@ -37,7 +48,6 @@ export const useControllerStore = defineStore({
       rhythms.forEach((e) => {
         const beatCount = e.beatCount;
         const uuid = e.uuid;
-        console.log(beatCount, uuid);
 
         const interval = beatDuration(beatCount);
 
@@ -52,6 +62,7 @@ export const useControllerStore = defineStore({
       // Triggers animation
       loop.onBeat();
 
+      // Plays sound using tonejs
       loop.tracksData.forEach((track: Track) => {
         const instrument = track.instrument;
       });

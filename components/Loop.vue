@@ -237,11 +237,11 @@ export default defineComponent({
     },
     onBeat() {
       const beat = this.loop.currentBeat;
-      console.log(beat);
+
       // Add class onBeat to sectors in current track
       this.trackArcElements[beat].classList.add("onBeat");
 
-      // Remove class onBeat to sectors in current track
+      // Remove class onBeat to previous sectors in current track
       this.trackArcElements[
         (beat - 1 + this.loop.beatCount) % this.loop.beatCount
       ].classList.remove("onBeat");
@@ -292,14 +292,14 @@ export default defineComponent({
 
 .onBeat {
   animation: 1000ms ease-in onBeat;
+  /* stroke: #fb7185; */
 }
 
 @keyframes onBeat {
   0% {
-    stroke: #9f1239;
+    stroke: #fb7185;
   }
   10% {
-    stroke: #fb7185;
   }
   90% {
     stroke: #fb7185;
