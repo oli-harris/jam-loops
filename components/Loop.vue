@@ -234,6 +234,10 @@ export default defineComponent({
 
       if (note) return this.trackNoteElements[track][beat].classList.add("disabled");
       this.trackNoteElements[track][beat].classList.remove("disabled");
+
+      // Play sample on addition
+      const sampleUuid = this.loop.tracksData[track].trackSample;
+      useControllerStore().playNote(sampleUuid);
     },
     onBeat() {
       const beat = this.loop.currentBeat;

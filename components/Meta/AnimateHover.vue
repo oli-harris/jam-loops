@@ -1,17 +1,23 @@
 <template>
-  <div class="animate__animated animate__infinite" :class="[classList, {[animation] : playAnimation}]" @mouseover="onHover" @mouseleave="isHover = false" @animationiteration="animationEnd">
+  <div
+    class="animate__animated animate__infinite"
+    :class="[classList, { [animation]: playAnimation }]"
+    @mouseover="onHover"
+    @mouseleave="isHover = false"
+    @animationiteration="animationEnd"
+  >
     <slot></slot>
   </div>
 </template>
 
 <script>
-import 'animate.css';
+import "animate.css";
 
 export default defineComponent({
   props: {
     animateOnStart: {
       type: Boolean,
-      default: false
+      default: false,
     },
     classList: {
       type: String,
@@ -19,25 +25,28 @@ export default defineComponent({
     },
     animation: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
+    loop: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
       playAnimation: this.animateOnStart,
-      isHover: false
-    }
+      isHover: false,
+    };
   },
   methods: {
     onHover() {
-      this.playAnimation = true
-      this.isHover = true
+      this.playAnimation = true;
+      this.isHover = true;
     },
-    
+
     animationEnd() {
-      // Don't replay animation if not hovering
-      if (!this.isHover) this.playAnimation = false
-    }
-  }
+      if (!this.isHover | !this.loop) this.playAnimation = false;
+    },
+  },
 });
 </script>

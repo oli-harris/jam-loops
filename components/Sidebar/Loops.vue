@@ -15,7 +15,7 @@ export default defineComponent({
   },
   methods: {
     addNewLoop() {
-      this.loopsStore.addEmptyLoop("Drums", 8, 2);
+      // this.loopsStore.addEmptyLoop("Drums", 8, 2);
     },
   },
 });

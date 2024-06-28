@@ -14,6 +14,8 @@
       </main>
     </div>
   </div>
+
+  <MutedPopup />
 </template>
 
 <script lang="ts">
@@ -32,9 +34,13 @@ export default defineComponent({
   },
   methods: {
     saturateLoops() {
-      this.loopsStore.addEmptyLoop("Drums", 8, 2);
-      this.loopsStore.addEmptyLoop("Hihats", 3, 3);
-      this.loopsStore.addEmptyLoop("Glorbs", 5, 1);
+      this.loopsStore.addEmptyLoop("Drums", 8, 3, [
+        "2cffffa0-02bc-4fed-a2d9-16fedeebb8b5",
+        "c67f7892-6f32-4add-a277-746bb72d549f",
+        "260ed9ec-d6ca-4fea-be07-e2d467c05d95",
+      ]);
+      // this.loopsStore.addEmptyLoop("Hihats", 3, 3);
+      // this.loopsStore.addEmptyLoop("Glorbs", 5, 1);
     },
     inititate() {
       // On play

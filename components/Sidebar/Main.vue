@@ -34,6 +34,7 @@
 <script lang="ts">
 export default defineComponent({
   data() {
+    // Bad way to do it, causes reactivity errors
     return {
       viewName: "SidebarTracks",
       viewSelected: resolveComponent("SidebarTracks"),

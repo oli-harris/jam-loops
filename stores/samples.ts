@@ -9,6 +9,18 @@ export const useSamplesStore = defineStore({
     packsArray(): Pack[] {
       return Object.values(this.packs);
     },
+    samplePaths(): Record<string, string> {
+      // Returns obj of sample uuids and paths
+      let paths: Record<string, string> = {};
+
+      this.packsArray.forEach((pack: Pack) => {
+        Object.entries(pack.samples).forEach(([key, sample]: [string, Sample]) => {
+          paths[key] = sample.samplePath;
+        });
+      });
+
+      return paths;
+    },
   },
   actions: {
     async fetchSamplePacks() {
@@ -20,7 +32,6 @@ export const useSamplesStore = defineStore({
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
       const data: Packs = (await response.json()) || {};
-      console.log(data);
 
       this.packs = data as Packs;
     },

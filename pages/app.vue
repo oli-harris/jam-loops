@@ -4,9 +4,7 @@
     class="absolute left-0 top-0 z-50 flex h-screen w-screen items-center justify-center bg-stone-950"
     :class="{ hidden: isOnDesktop }"
   >
-    <div class="font-poppins text-xl text-rose-700">
-      This app is desktop only.
-    </div>
+    <div class="font-poppins text-xl text-rose-700">This app is desktop only.</div>
   </div>
 
   <App />

@@ -1,5 +1,7 @@
-import { Loop, getTransport } from "tone";
+import { start, Loop, getTransport, ToneAudioBuffer, Player, Volume } from "tone";
 import type { Track } from "./loops";
+
+const audioState = {} as Audio;
 
 export const useControllerStore = defineStore({
   id: "controllerStore",
@@ -10,15 +12,25 @@ export const useControllerStore = defineStore({
     beatsPerMeasure: 4, // Represents numerator in time signature
   }),
   actions: {
+    init() {
+      // Starts tonejs so always avaible to play sounds
+      start();
+      console.log("Tone.js ready to play");
+
+      return true;
+    },
     play() {
       if (this.playing) return;
       this.playing = true;
 
       // Rebinds beats each time to ensure state correct
-      this.bindBeats();
+      this.addSampleBuffers();
+      this.initiateBeats();
 
-      // Start tone.js
+      // Initialises tone.js
       getTransport().bpm.value = this.tempo;
+
+      // Start loops
       getTransport().start();
     },
     stop() {
@@ -29,11 +41,43 @@ export const useControllerStore = defineStore({
       getTransport().stop();
       getTransport().cancel();
 
-      useLoopsStore().loopsArray.forEach((e) => {
-        e.currentBeat = 0;
+      // Resets beat to start
+      useLoopsStore().loopsArray.forEach((loop) => {
+        loop.currentBeat = 0;
       });
     },
-    bindBeats() {
+    addSampleBuffers() {
+      // Adds new samples to tonejs.buffer and instantiates player
+      const samples = useLoopsStore().getAllSamples;
+
+      samples.forEach((sampleUuid: string) => {
+        // Skip if already buffered
+        if (sampleUuid in audioState) return;
+
+        const samplePath = useSamplesStore().samplePaths[sampleUuid];
+
+        const buffer = new ToneAudioBuffer(
+          samplePath,
+          () => {
+            // Buffer loaded
+            this.addSamplePlayer(buffer, sampleUuid);
+          },
+          (error) => {
+            console.log("Error loading buffer", error);
+          },
+        );
+      });
+    },
+    addSamplePlayer(buffer: ToneAudioBuffer, sampleUuid: string) {
+      // Create player on load
+      const player = new Player(buffer).toDestination();
+
+      audioState[sampleUuid] = {
+        buffer: buffer,
+        player: player,
+      };
+    },
+    initiateBeats() {
       const beatDuration = (beats: number): number => {
         // Duration of each beat on the time signature, and measure in seconds
         const beatDuration = 60 / this.tempo;
@@ -45,30 +89,44 @@ export const useControllerStore = defineStore({
       const rhythms = useLoopsStore().getAllRhythms;
 
       // Binds function to play beat at constant intervals of the beat duration
-      rhythms.forEach((e) => {
-        const beatCount = e.beatCount;
-        const uuid = e.uuid;
+      rhythms.forEach((loop) => {
+        const beatCount = loop.beatCount;
+        const loopUuid = loop.uuid;
 
         const interval = beatDuration(beatCount);
 
-        const loop = new Loop((time) => {
-          this.playBeat(uuid);
+        const newLoop = new Loop((time) => {
+          this.playLoopNotes(loopUuid, time);
         }, interval).start(0);
       });
     },
-    playBeat(uuid: string) {
-      const loop = useLoopsStore().loops[uuid];
+    playLoopNotes(loopUuid: string, time: number) {
+      const loop = useLoopsStore().loops[loopUuid];
+      const currentBeat = loop.currentBeat;
 
-      // Triggers animation
-      loop.onBeat();
-
-      // Plays sound using tonejs
+      // Plays notes using tonejs
       loop.tracksData.forEach((track: Track) => {
-        const instrument = track.instrument;
+        // Check if there is a note to be played
+        if (!track.beats[currentBeat]) return;
+        const sampleUuid = track.trackSample;
+
+        this.playNote(sampleUuid, time);
       });
+
+      // Plays beat animation
+      loop.onBeat();
 
       // Increment current beat
       loop.currentBeat = (loop.currentBeat + 1) % loop.beatCount;
+    },
+    playNote(sampleUuid: string, time: number = 0) {
+      const player = audioState[sampleUuid].player;
+
+      // Check player state
+      if (player.state === "started") player.stop(time);
+
+      // Play sample
+      player.start(time);
     },
   },
 });
@@ -83,3 +141,10 @@ const volumePercentageToDB = (volumePercentage: number): number => {
 const getInstrument = (uuid: string): string => {
   return "";
 };
+
+interface Audio {
+  [uuid: string]: {
+    buffer: ToneAudioBuffer;
+    player: Player;
+  };
+}

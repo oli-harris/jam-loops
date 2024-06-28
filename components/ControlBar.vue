@@ -1,7 +1,7 @@
 <template>
   <div class="grid grid-cols-3 items-center px-6 py-3 font-poppins">
     <div class="flex flex-row items-center justify-self-start">
-      <MetaAnimateHover :animateOnStart="true" animation="animate__rubberBand">
+      <MetaAnimateHover :animateOnStart="true" :loop="true" animation="animate__rubberBand">
         <div class="mr-4 cursor-default text-5xl font-black text-rose-600">JAM</div>
       </MetaAnimateHover>
       <div class="text-lg text-rose-600">My Project</div>

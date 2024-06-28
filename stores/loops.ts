@@ -25,12 +25,19 @@ export const useLoopsStore = defineStore({
 
       return rhythms;
     },
+    getAllSamples(): string[] {
+      // Returns array of sample uuids
+      const samples = this.loopsArray.reduce((acc: string[], loop: Loop) => {
+        loop.tracksData.forEach((track: Track) => acc.push(track.trackSample));
+        return acc;
+      }, []);
+
+      return samples;
+    },
   },
   actions: {
-    addEmptyLoop(loopTitle: string, beatCount: number, trackCount: number) {
+    addEmptyLoop(loopTitle: string, beatCount: number, trackCount: number, trackSamples: string[]) {
       const uuid = crypto.randomUUID().toString();
-
-      const instrument = "drum"; // temporary value
 
       const newLoop = {
         uuid: uuid,
@@ -42,8 +49,8 @@ export const useLoopsStore = defineStore({
         trackCount: trackCount,
 
         // TracksData must have new instances and not references
-        tracksData: Array.from({ length: trackCount }, () => ({
-          instrument: instrument,
+        tracksData: Array.from({ length: trackCount }, (_, trackNumber) => ({
+          trackSample: trackSamples[trackNumber],
           beats: Array.from({ length: beatCount }, () => false),
         })),
       };
@@ -79,6 +86,6 @@ export interface Loop {
 }
 
 export interface Track {
-  instrument: string; // uuid of instrument used
+  trackSample: string; // uuid of sample used
   beats: boolean[];
 }
