@@ -1,0 +1,47 @@
+{
+  "9395130a-b520-43fa-8d69-2030c7fb2023": {
+    "samplePackTitle": "Casio PT-30",
+    "samples": [
+      {
+        "uuid": "2cffffa0-02bc-4fed-a2d9-16fedeebb8b5",
+        "sampleTitle": "Percussion",
+        "samplePath": "static/samples/packs/9395130a-b520-43fa-8d69-2030c7fb2023/2cffffa0-02bc-4fed-a2d9-16fedeebb8b5.wav"
+      },
+      {
+        "uuid": "b483e54f-07e3-4184-9467-8a3567e4f943",
+        "sampleTitle": "Bass 1",
+        "samplePath": "static/samples/packs/9395130a-b520-43fa-8d69-2030c7fb2023/b483e54f-07e3-4184-9467-8a3567e4f943.wav"
+      },
+      {
+        "uuid": "44545743-7448-475c-bdc9-26d2aa626ec8",
+        "sampleTitle": "Bass 2",
+        "samplePath": "static/samples/packs/9395130a-b520-43fa-8d69-2030c7fb2023/44545743-7448-475c-bdc9-26d2aa626ec8.wav"
+      },
+      {
+        "uuid": "260ed9ec-d6ca-4fea-be07-e2d467c05d95",
+        "sampleTitle": "Hi-Hat 1",
+        "samplePath": "static/samples/packs/9395130a-b520-43fa-8d69-2030c7fb2023/260ed9ec-d6ca-4fea-be07-e2d467c05d95.wav"
+      },
+      {
+        "uuid": "c67f7892-6f32-4add-a277-746bb72d549f",
+        "sampleTitle": "Snare 1",
+        "samplePath": "static/samples/packs/9395130a-b520-43fa-8d69-2030c7fb2023/c67f7892-6f32-4add-a277-746bb72d549f.wav"
+      },
+      {
+        "uuid": "3be773bb-4e9f-4abc-8085-f88813c59861",
+        "sampleTitle": "Snare 2",
+        "samplePath": "static/samples/packs/9395130a-b520-43fa-8d69-2030c7fb2023/3be773bb-4e9f-4abc-8085-f88813c59861.wav"
+      },
+      {
+        "uuid": "c098d491-d6d2-4d54-a2d7-635c787f17e2",
+        "sampleTitle": "Hi-Hat 2",
+        "samplePath": "static/samples/packs/9395130a-b520-43fa-8d69-2030c7fb2023/c098d491-d6d2-4d54-a2d7-635c787f17e2.wav"
+      },
+      {
+        "uuid": "1abc0c79-954b-4adf-91ef-6ce7484930dd",
+        "sampleTitle": "Cymbal",
+        "samplePath": "static/samples/packs/9395130a-b520-43fa-8d69-2030c7fb2023/1abc0c79-954b-4adf-91ef-6ce7484930dd.wav"
+      }
+    ]
+  }
+}

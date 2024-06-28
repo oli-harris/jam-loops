@@ -23,7 +23,7 @@ from playsound import playsound
 # }
 
 # Local destination folder
-sampleDestinationParentFolder = "assets/samples/packs"
+sampleDestinationParentFolder = "static/samples/packs"
 
 def main():
   samplesPath = sys.argv[1]
