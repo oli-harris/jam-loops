@@ -63,7 +63,8 @@ export const useControllerStore = defineStore({
     },
     bufferSample(sampleUuid: string): Promise<Player> {
       return new Promise((resolve, reject) => {
-        // Skip if already buffered
+        // Skip if no sample or already buffered
+        if (sampleUuid === "") return;
         if (sampleUuid in audioState) resolve(audioState[sampleUuid].player);
 
         const samplePath = useSamplesStore().samples[sampleUuid].samplePath;
@@ -139,6 +140,7 @@ export const useControllerStore = defineStore({
       });
     },
     playNote(sampleUuid: string, time: number = 0) {
+      if (!(sampleUuid in audioState)) return;
       const player = audioState[sampleUuid].player;
 
       // Check player state
