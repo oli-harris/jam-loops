@@ -1,7 +1,9 @@
-export const use = defineStore({
-  id: "projectStore",
+export const useAppStore = defineStore({
+  id: "appStore",
   state: () => ({
-    title: "My Project",
+    // Drag-drop functionality of tracks
+    addingTrack: false,
+    trackSample: "",
   }),
   actions: {},
 });

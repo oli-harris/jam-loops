@@ -1,8 +1,12 @@
+import type { PiniaPluginContext } from "pinia";
+import Loop from "~/components/Loop.vue";
+
 export const useLoopsStore = defineStore({
   id: "loopsStore",
   state: () => ({
     loops: {} as Loops,
   }),
+  persist: true,
   getters: {
     positionedLoops(): Loop[] {
       // Returns an array of loops sorted by position
@@ -36,12 +40,13 @@ export const useLoopsStore = defineStore({
     },
   },
   actions: {
-    addEmptyLoop(loopTitle: string, beatCount: number, trackCount: number, trackSamples: string[]) {
+    addEmptyLoop(loopTitle: string, beatCount: number, trackCount: number) {
       const uuid = crypto.randomUUID().toString();
 
       const newLoop = {
         uuid: uuid,
         onBeat: () => {},
+        resetBeat: () => {},
         currentBeat: 0,
         position: Object.keys(this.loops).length,
         loopTitle: loopTitle,
@@ -50,7 +55,7 @@ export const useLoopsStore = defineStore({
 
         // TracksData must have new instances and not references
         tracksData: Array.from({ length: trackCount }, (_, trackNumber) => ({
-          trackSample: trackSamples[trackNumber],
+          trackSample: "",
           beats: Array.from({ length: beatCount }, () => false),
         })),
       };
@@ -77,6 +82,7 @@ export interface Loops {
 export interface Loop {
   uuid: string;
   onBeat: () => void; // Beat indexed from 0
+  resetBeat: () => void;
   position: number; // Zero index position in grid
   loopTitle: string; // Name of loop
   beatCount: number; // Number of beats

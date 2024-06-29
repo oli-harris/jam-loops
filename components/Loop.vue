@@ -43,11 +43,13 @@ export default defineComponent({
       trackArcElements: [] as SVGPathElement[],
       noteRadius: 0.045,
       loop: useLoopsStore().loops[this.uuid],
+      trackAddingTo: 0,
     };
   },
   mounted() {
     this.createLoopSVG();
     this.loop.onBeat = this.onBeat;
+    this.loop.resetBeat = this.resetBeat;
   },
   methods: {
     createLoopSVG() {
@@ -94,6 +96,9 @@ export default defineComponent({
         sectorElement.setAttribute("track", track.toString());
         // Cannot use @onclick with setAttribute
         sectorElement.onclick = this.toggleNote;
+        sectorElement.ondragover = this.dragOverBeat;
+        sectorElement.ondragleave = this.dragLeaveBeat;
+        sectorElement.ondrop = this.dropTrack;
 
         // Note element
         const noteElement = noteShape(angle1, angle2, outerTrackRadius, innerTrackRadius);
@@ -237,18 +242,87 @@ export default defineComponent({
 
       // Play sample on addition
       const sampleUuid = this.loop.tracksData[track].trackSample;
-      useControllerStore().playNote(sampleUuid);
+      useControllerStore().previewNote(sampleUuid);
+    },
+    dragOverBeat(event: MouseEvent) {
+      event.preventDefault();
+      if (!this.isAddingTrack) return;
+      // Adds adding-track class to all beats
+
+      const target = event.target as SVGPathElement;
+      const track = parseInt(target.getAttribute("track") || "0");
+      this.trackAddingTo = track;
+
+      this.trackBeatElements[track].forEach((element: SVGPathElement) => {
+        element.classList.add("adding-track");
+      });
+    },
+    dragLeaveBeat(event: MouseEvent) {
+      event.preventDefault();
+      if (!this.isAddingTrack) return;
+      // Removes adding-track class from all beats when being dragged over
+
+      const target = event.target as SVGPathElement;
+      const track = parseInt(target.getAttribute("track") || "0");
+
+      this.trackBeatElements[track].forEach((element: SVGPathElement) => {
+        element.classList.remove("adding-track");
+      });
+    },
+    dropTrack(event: DragEvent) {
+      if (!this.isAddingTrack) return;
+
+      // Assign sample to track
+      const sample = useAppStore().trackSample;
+      const track = this.trackAddingTo;
+
+      this.loop.tracksData[track].trackSample = sample;
+
+      // For each beat in track
+      this.trackBeatElements[track].forEach((element: SVGPathElement) => {
+        // Remove adding-track class as track nolonger being dragged
+        element.classList.remove("adding-track");
+      });
+
+      // Play sample
+      useControllerStore().previewNote(sample);
     },
     onBeat() {
-      const beat = this.loop.currentBeat;
+      // Need to -1 from current beat as function is scheduled to be called after beat has incrememented
+      const beat = (this.loop.currentBeat - 1 + this.loop.beatCount) % this.loop.beatCount;
 
-      // Add class onBeat to sectors in current track
-      this.trackArcElements[beat].classList.add("onBeat");
+      // Add class to sectors and notes on current beat in each track
+      this.trackBeatElements.forEach((track) => track[beat].classList.add("beat-onBeat"));
+      this.trackNoteElements.forEach((note) => note[beat].classList.add("note-onBeat"));
 
-      // Remove class onBeat to previous sectors in current track
-      this.trackArcElements[
-        (beat - 1 + this.loop.beatCount) % this.loop.beatCount
-      ].classList.remove("onBeat");
+      // Remove class from sectors and notes on previous beat in each track
+      this.trackBeatElements.forEach((track) =>
+        track[(beat - 1 + this.loop.beatCount) % this.loop.beatCount].classList.remove(
+          "beat-onBeat",
+        ),
+      );
+      this.trackNoteElements.forEach((note) =>
+        note[(beat - 1 + this.loop.beatCount) % this.loop.beatCount].classList.remove(
+          "note-onBeat",
+        ),
+      );
+    },
+    resetBeat() {
+      const beat = (this.loop.currentBeat - 1 + this.loop.beatCount) % this.loop.beatCount;
+      this.loop.currentBeat = 0;
+
+      // Remove class from sectors and notes on current beat in each track
+      this.trackBeatElements.forEach((track) =>
+        track.forEach((beat) => beat.classList.remove("beat-onBeat")),
+      );
+      this.trackNoteElements.forEach((note) =>
+        note.forEach((note) => note.classList.remove("note-onBeat")),
+      );
+    },
+  },
+  computed: {
+    isAddingTrack(): boolean {
+      return useAppStore().addingTrack;
     },
   },
 });
@@ -258,9 +332,10 @@ export default defineComponent({
 <style>
 .beat {
   fill: #0c0a09;
-  transition: 150ms ease-out fill;
+  transition: 100ms ease-out fill;
   stroke: #9f1239;
   stroke-width: 0.04;
+  z-index: 0;
 }
 
 .beat:hover {
@@ -268,12 +343,17 @@ export default defineComponent({
   transition: 75ms ease-out fill;
 }
 
+.beat.adding-track {
+  fill: #fb7185;
+  transition: 0ms ease-out fill;
+}
+
 .note {
   fill: #fb7185;
   stroke: #fb7185;
   stroke-width: 0;
   pointer-events: none;
-  transition: 300ms ease-out stroke-width;
+  transition: 300ms ease-out all;
 }
 
 .beat:hover + .note {
@@ -294,22 +374,29 @@ export default defineComponent({
   stroke-width: 0.04;
 }
 
-.onBeat {
-  animation: 1000ms ease-in onBeat;
-  /* stroke: #fb7185; */
+.beat-onBeat {
+  fill: #fb7185;
+  /* transition: 0ms fill; */
 }
 
-@keyframes onBeat {
+.note-onBeat {
+  fill: #9f1239;
+  stroke: #9f1239;
+  stroke-width: 0.04;
+  transition: 50ms ease-out all;
+}
+
+@keyframes note-onBeat {
   0% {
-    stroke: #fb7185;
+    fill: #fb7185;
   }
   10% {
   }
-  90% {
-    stroke: #fb7185;
+  80% {
+    fill: #fb7185;
   }
   100% {
-    stroke: #9f1239;
+    fill: #9f1239;
   }
 }
 </style>

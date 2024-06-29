@@ -14,10 +14,6 @@
         "sampleTitle": "Bass 2",
         "samplePath": "/samples/packs/9395130a-b520-43fa-8d69-2030c7fb2023/44545743-7448-475c-bdc9-26d2aa626ec8.wav"
       },
-      "260ed9ec-d6ca-4fea-be07-e2d467c05d95": {
-        "sampleTitle": "Hi-Hat 1",
-        "samplePath": "/samples/packs/9395130a-b520-43fa-8d69-2030c7fb2023/260ed9ec-d6ca-4fea-be07-e2d467c05d95.wav"
-      },
       "c67f7892-6f32-4add-a277-746bb72d549f": {
         "sampleTitle": "Snare 1",
         "samplePath": "/samples/packs/9395130a-b520-43fa-8d69-2030c7fb2023/c67f7892-6f32-4add-a277-746bb72d549f.wav"
@@ -25,6 +21,10 @@
       "3be773bb-4e9f-4abc-8085-f88813c59861": {
         "sampleTitle": "Snare 2",
         "samplePath": "/samples/packs/9395130a-b520-43fa-8d69-2030c7fb2023/3be773bb-4e9f-4abc-8085-f88813c59861.wav"
+      },
+      "260ed9ec-d6ca-4fea-be07-e2d467c05d95": {
+        "sampleTitle": "Hi-Hat 1",
+        "samplePath": "/samples/packs/9395130a-b520-43fa-8d69-2030c7fb2023/260ed9ec-d6ca-4fea-be07-e2d467c05d95.wav"
       },
       "c098d491-d6d2-4d54-a2d7-635c787f17e2": {
         "sampleTitle": "Hi-Hat 2",

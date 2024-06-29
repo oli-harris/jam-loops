@@ -24,7 +24,7 @@ export default defineComponent({
   },
   methods: {
     handleResize() {
-      this.isOnDesktop = window.innerWidth / window.innerHeight > 1;
+      // this.isOnDesktop = window.innerWidth / window.innerHeight > 1;
     },
     beat() {},
   },

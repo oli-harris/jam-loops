@@ -2,7 +2,7 @@
 <template>
   <MetaAnimateHover
     :animate-on-start="true"
-    class="fixed bottom-8 right-8"
+    classList="fixed bottom-8 right-8 animate__delay-init"
     animation="animate__tada"
     v-if="!unmuted"
   >
@@ -12,12 +12,11 @@
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="icon icon-tabler icon-tabler-volume-off"
+        class="stroke-white"
         width="32"
         height="32"
         viewBox="0 0 24 24"
         stroke-width="1.5"
-        stroke="#ffffff"
         fill="none"
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -36,17 +35,15 @@
 
 <script lang="ts">
 export default defineComponent({
-  data() {
-    return {
-      unmuted: false,
-    };
-  },
   methods: {
     unmute() {
-      const success = useControllerStore().init();
-      if (!success) return;
-
-      this.unmuted = true;
+      useControllerStore().init();
+      console.log(this.unmuted);
+    },
+  },
+  computed: {
+    unmuted() {
+      return useControllerStore().isInitialised;
     },
   },
 });

@@ -1,10 +1,11 @@
 <template>
   <div
-    class="animate__animated animate__infinite"
-    :class="[classList, { [animation]: playAnimation }]"
-    @mouseover="onHover"
-    @mouseleave="isHover = false"
+    class="animate__animated"
+    :class="[classList, { [animation]: playAnimation }, { ['animate__infinite']: loop }]"
+    @mouseenter="onHover"
+    @mouseleave="stopHover"
     @animationiteration="animationEnd"
+    @animationend="animationEnd"
   >
     <slot></slot>
   </div>
@@ -40,8 +41,13 @@ export default defineComponent({
   },
   methods: {
     onHover() {
-      this.playAnimation = true;
       this.isHover = true;
+
+      // Play the animation on hover
+      this.playAnimation = true;
+    },
+    stopHover() {
+      this.isHover = false;
     },
 
     animationEnd() {

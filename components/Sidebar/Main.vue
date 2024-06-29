@@ -1,23 +1,26 @@
 <template>
-  <div class="flex h-full flex-col px-6 py-2">
+  <div class="relative flex h-full flex-col px-6 py-2">
     <!-- Navigation bar -->
-    <div class="flex flex-row justify-center font-poppins text-lg text-rose-100">
+    <div class="flex flex-row justify-center font-poppins text-lg text-rose-100 transition-all">
       <button
-        :class="{ ['font-black text-rose-600 underline']: viewName == 'SidebarTracks' }"
+        class="hover:text-rose-400"
+        :class="{ ['font-black !text-rose-600 underline']: viewName == 'SidebarTracks' }"
         @click="switchView('SidebarTracks')"
       >
         Tracks
       </button>
       <div class="mx-2">/</div>
       <button
-        :class="{ ['font-black text-rose-600 underline']: viewName == 'SidebarMelodies' }"
+        class="hover:text-rose-400"
+        :class="{ ['font-black !text-rose-600 underline']: viewName == 'SidebarMelodies' }"
         @click="switchView('SidebarMelodies')"
       >
         Melodies
       </button>
       <div class="mx-2">/</div>
       <button
-        :class="{ ['font-black text-rose-600 underline']: viewName == 'SidebarLoops' }"
+        class="hover:text-rose-400"
+        :class="{ ['font-black !text-rose-600 underline']: viewName == 'SidebarLoops' }"
         @click="switchView('SidebarLoops')"
       >
         My Loops
@@ -25,7 +28,7 @@
     </div>
 
     <!-- View -->
-    <div class="flex-1 py-4">
+    <div class="mt-2 flex-1 py-4">
       <component :is="viewSelected" />
     </div>
   </div>

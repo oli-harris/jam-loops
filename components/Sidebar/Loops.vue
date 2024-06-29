@@ -1,7 +1,8 @@
 <template>
-  <div>
-    <div class="ml mt-8 font-black text-rose-200" @click="addNewLoop">Add New Loop</div>
+  <div class="flex flex-col flex-wrap">
+    <div class="text-rose-200" v-if="loopsEmpty">You appear to have no loops.<br /></div>
   </div>
+  <AddLoop :empty="loopsEmpty" class="absolute bottom-6 right-6" />
 </template>
 
 <script lang="ts">
@@ -11,6 +12,7 @@ export default defineComponent({
   data() {
     return {
       loopsStore: useLoopsStore(),
+      loopsEmpty: true,
     };
   },
   methods: {

@@ -9,18 +9,30 @@ export const useSamplesStore = defineStore({
     packsArray(): Pack[] {
       return Object.values(this.packs);
     },
-    samplePaths(): Record<string, string> {
+    samples(): Record<string, Sample> {
       // Returns obj of sample uuids and paths
-      let paths: Record<string, string> = {};
+      let samplesObj: Record<string, Sample> = {};
 
       this.packsArray.forEach((pack: Pack) => {
         Object.entries(pack.samples).forEach(([key, sample]: [string, Sample]) => {
-          paths[key] = sample.samplePath;
+          samplesObj[key] = sample;
         });
       });
 
-      return paths;
+      return samplesObj;
     },
+    // samplePaths(): Record<string, string> {
+    //   // Returns obj of sample uuids and paths
+    //   let paths: Record<string, string> = {};
+
+    //   this.packsArray.forEach((pack: Pack) => {
+    //     Object.entries(pack.samples).forEach(([key, sample]: [string, Sample]) => {
+    //       paths[key] = sample.samplePath;
+    //     });
+    //   });
+
+    //   return paths;
+    // },
   },
   actions: {
     async fetchSamplePacks() {

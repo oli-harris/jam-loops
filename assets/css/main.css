@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Extension of animate.css */
+.animate__delay-init {
+  animation-delay: 200ms;
+}
+
+.animate__delay-500ms {
+  animation-delay: 500ms;
+}
+
+.animate__fastest {
+  --animate-duration: 300ms;
+}

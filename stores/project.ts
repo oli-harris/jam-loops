@@ -1,7 +1,9 @@
 export const useProjectStore = defineStore({
   id: "projectStore",
   state: () => ({
-    title: "My Project",
+    projectTitle: "My Project",
+    projectUuid: "projectUUID",
   }),
   actions: {},
+  persist: true,
 });

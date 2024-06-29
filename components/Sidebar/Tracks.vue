@@ -1,12 +1,28 @@
 <template>
-  <div>
-    <div v-for="pack in packs">
-      <div class="mb-2 text-lg font-black text-rose-600">{{ pack.samplePackTitle }}</div>
+  <div v-for="pack in packs" class="flex flex-col flex-wrap items-start">
+    <MetaAnimateHover animation="animate__headShake">
+      <div
+        class="animate__animated animate__fast animate__rollIn mb-2 select-auto text-xl font-black text-rose-600"
+      >
+        {{ pack.samplePackTitle }}
+      </div>
+    </MetaAnimateHover>
 
-      <ul class="text-rose-100" v-for="sample in Object.values(pack.samples)">
-        <li class="ml-2">{{ sample.sampleTitle }}</li>
-      </ul>
-    </div>
+    <ul
+      class="animate__animated animate__fast animate__delay-500ms animate__fadeInLeft text-rose-100"
+      v-for="[uuid, sample] in Object.entries(pack.samples)"
+    >
+      <li
+        class="box-border px-3 transition-transform hover:scale-125"
+        @dragstart="dragTrack($event, uuid)"
+        @drackend="dropTrack"
+        draggable="true"
+        @click="useControllerStore().previewNote(uuid)"
+        :uuid="uuid"
+      >
+        {{ sample.sampleTitle }}
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -15,7 +31,23 @@ export default defineComponent({
   data() {
     return {
       samplesStore: useSamplesStore(),
+      appStore: useAppStore(),
     };
+  },
+  methods: {
+    dragTrack(event: DragEvent, sampleUuid: string) {
+      if (!event.dataTransfer) return;
+
+      event.dataTransfer.dropEffect = "copy";
+      event.dataTransfer.effectAllowed = "copy";
+
+      console.log(this.appStore.addingTrack);
+      this.appStore.addingTrack = true;
+      this.appStore.trackSample = sampleUuid;
+    },
+    dropTrack(event: DragEvent) {
+      useAppStore().addingTrack = false;
+    },
   },
   computed: {
     packs(): Pack[] {
