@@ -1,7 +1,9 @@
-import { start, Loop, getTransport, ToneAudioBuffer, Player, getDraw } from "tone";
+import { start, Loop, getTransport, ToneAudioBuffer, Player, getDraw, Volume } from "tone";
 import type { Track } from "./loops";
 
+// Tonejs doesn't work well with states
 const audioState = {} as Audio;
+let volume: Volume;
 
 export const useControllerStore = defineStore({
   id: "controllerStore",
@@ -19,6 +21,10 @@ export const useControllerStore = defineStore({
 
       // Starts tonejs so always avaible to play sounds
       start();
+      // Creates volume node
+      volume = new Volume().toDestination();
+
+      // Prebuffer instruments
       this.addSampleBuffers();
       console.log("Tone.js ready to play");
     },
@@ -27,12 +33,15 @@ export const useControllerStore = defineStore({
       this.playing = true;
 
       this.init();
-      // Rebinds beats each time to ensure state correct
       this.addSampleBuffers();
+
+      // Rebinds beats each time to ensure state correct
       this.initiateBeats();
 
       // Initialises tone.js
-      getTransport().bpm.value = this.tempo;
+      // Tempo must be divided by 2, weird workaround to ensure 4 beats in a measure
+      this.setBPM();
+      this.setVolume();
 
       // Sets state of loops
       useLoopsStore().loopsArray.forEach((loop) => {
@@ -92,12 +101,10 @@ export const useControllerStore = defineStore({
       });
     },
     initiateBeats() {
-      const beatDuration = (beats: number): number => {
-        // Duration of each beat on the time signature, and measure in seconds
-        const beatDuration = 60 / this.tempo;
-        const measureDuration = this.beatsPerMeasure * beatDuration;
-
-        return measureDuration / beats;
+      const beatDuration = (beats: number): string => {
+        // Returns duration of each beat in terms of measures, where 1 measure is 4 beats in a 4/4 timesignature
+        console.log(`${1 / beats}m`);
+        return `${1 / beats}m`;
       };
 
       const rhythms = useLoopsStore().getAllRhythms;
@@ -125,8 +132,8 @@ export const useControllerStore = defineStore({
       loop.tracksData.forEach((track: Track) => {
         // Check if there is a note to be played
         if (!track.beats[currentBeat]) return;
-        const sampleUuid = track.trackSample;
 
+        const sampleUuid = track.trackSample;
         this.playNote(sampleUuid, time);
       });
 
@@ -154,12 +161,23 @@ export const useControllerStore = defineStore({
         console.log("Sample not loaded");
       }
     },
+    setBPM() {
+      getTransport().bpm.value = this.tempo / 2;
+    },
+    setVolume() {
+      const volumeDB = volumePercentageToDB(this.volume);
+
+      Object.values(audioState).forEach((audio) => {
+        audio.player.volume.value = volumeDB;
+      });
+    },
   },
 });
 
 const volumePercentageToDB = (volumePercentage: number): number => {
   // ToneJS uses volume in DB with 0 being max
-  const volumeDB = 10 * Math.log10(volumePercentage);
+  const volumeDB = Math.max(20 * Math.log10(volumePercentage), -1000);
+  console.log(volumeDB);
 
   return volumeDB;
 };

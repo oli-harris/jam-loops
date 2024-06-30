@@ -1,3 +1,3 @@
 <template>
-  <div class="text-rose-200">Melodies</div>
+  <div class="text-rose-200"></div>
 </template>

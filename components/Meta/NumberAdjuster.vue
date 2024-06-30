@@ -7,8 +7,9 @@
     @mousedown="mouseDown"
     @mouseup="mouseUp"
     v-model="inputValue"
-    @select.prevent
-    @input=""
+    ref="input"
+    @input="input"
+    @selectstart.prevent
   />
 </template>
 
@@ -36,6 +37,7 @@ export default defineComponent({
   },
   emits: ["numberValue"],
   beforeMount() {
+    // Initial input value setup
     this.inputValue = this.defaultValue.toString();
     this.$emit("numberValue", Math.round(this.hiddenValue));
   },
@@ -57,8 +59,6 @@ export default defineComponent({
       // Style cursor
       document.body.style.setProperty("cursor", "");
 
-      this.$emit("numberValue", Math.round(this.hiddenValue));
-
       // Bind functions to entire window
       window.removeEventListener("mousemove", this.drag);
       window.removeEventListener("mouseup", this.mouseUp);
@@ -66,10 +66,11 @@ export default defineComponent({
     drag(event: MouseEvent) {
       const range = this.max - this.min;
       const deltaX = (event.clientX - this.startX) * (range / 300);
-      console.log(this.inputValue, this.hiddenValue);
 
       this.startX = event.clientX;
       this.hiddenValue = this.correctInput(this.hiddenValue + deltaX);
+
+      this.$emit("numberValue", Math.round(this.hiddenValue));
     },
     correctInput(value: number): number {
       return Math.min(Math.max(value, this.min), this.max);
