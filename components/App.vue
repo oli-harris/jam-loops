@@ -1,20 +1,19 @@
 <template>
   <div class="flex h-screen select-none flex-col overflow-hidden font-poppins">
-    <header class="bg-stone-950">
+    <header class="h-16 bg-stone-950">
       <ControlBar />
     </header>
 
-    <div class="flex h-full flex-1">
-      <aside class="w-[66] border-r-2 border-rose-900 bg-stone-950">
+    <div class="flex max-h-[calc(100vh-4rem)] flex-1">
+      <aside class="overflow-y-auto border-r-2 border-rose-900 bg-stone-950">
         <SidebarMain />
       </aside>
 
-      <main class="flex-1 border-t-2 border-rose-900 bg-stone-900">
+      <main class="flex-1 overflow-y-auto border-t-2 border-rose-900 bg-stone-900">
         <LoopsViewer />
       </main>
     </div>
   </div>
-
   <MutedPopup />
 </template>
 

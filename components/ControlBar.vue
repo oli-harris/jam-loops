@@ -1,5 +1,5 @@
 <template>
-  <div class="grid grid-cols-3 items-center px-6 py-3 font-poppins">
+  <div class="grid grid-cols-3 items-center px-6 py-3">
     <div class="flex flex-row items-center justify-self-start">
       <MetaAnimateHover
         :animateOnStart="true"

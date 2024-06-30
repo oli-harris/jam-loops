@@ -53,7 +53,7 @@
             @number-value="(numberValue) => (trackCount = numberValue)"
             class="text-lg"
             :default-value="3"
-            :max="6"
+            :max="5"
             :min="1"
           />
         </div>

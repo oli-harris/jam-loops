@@ -1,5 +1,5 @@
 <template>
-  <div class="loopviewer grid h-full gap-8 overflow-y-auto p-4">
+  <div class="loopviewer grid gap-8 p-4">
     <div v-for="(loop, position) in positionedLoops" :key="position">
       <Loop
         :uuid="loop.uuid"

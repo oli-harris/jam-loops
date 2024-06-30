@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex h-full flex-col px-6 py-2">
+  <div class="relative flex min-h-full flex-col px-6 py-2">
     <!-- Navigation bar -->
     <div class="flex flex-row justify-center font-poppins text-lg text-rose-100 transition-all">
       <button

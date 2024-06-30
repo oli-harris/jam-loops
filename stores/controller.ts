@@ -34,10 +34,10 @@ export const useControllerStore = defineStore({
       // Initialises tone.js
       getTransport().bpm.value = this.tempo;
 
-      // Start loops
-      // Sets beat to 0
+      // Sets state of loops
       useLoopsStore().loopsArray.forEach((loop) => {
         loop.currentBeat = 0;
+        loop.isPlaying = true;
       });
 
       getTransport().start();
@@ -52,6 +52,7 @@ export const useControllerStore = defineStore({
 
       // Resets beat to start
       useLoopsStore().loopsArray.forEach((loop) => {
+        loop.isPlaying = false;
         loop.resetBeat();
       });
     },

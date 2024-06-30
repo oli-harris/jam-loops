@@ -47,6 +47,7 @@ export const useLoopsStore = defineStore({
         uuid: uuid,
         onBeat: () => {},
         resetBeat: () => {},
+        isPlaying: false,
         currentBeat: 0,
         position: Object.keys(this.loops).length,
         loopTitle: loopTitle,
@@ -83,6 +84,7 @@ export interface Loop {
   uuid: string;
   onBeat: () => void; // Beat indexed from 0
   resetBeat: () => void;
+  isPlaying: boolean;
   position: number; // Zero index position in grid
   loopTitle: string; // Name of loop
   beatCount: number; // Number of beats
