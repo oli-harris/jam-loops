@@ -31,16 +31,11 @@ export default defineComponent({
   },
   data() {
     return {
-      hiddenValue: 120,
+      hiddenValue: this.defaultValue,
       startX: 0,
     };
   },
   emits: ["numberValue"],
-  beforeMount() {
-    // Initial input value setup
-    this.inputValue = this.defaultValue.toString();
-    this.$emit("numberValue", Math.round(this.hiddenValue));
-  },
   methods: {
     input() {
       this.$emit("numberValue", Math.round(this.hiddenValue));
@@ -85,7 +80,7 @@ export default defineComponent({
       set(newValue: string) {
         this.hiddenValue = this.correctInput(parseInt(newValue));
 
-        return Math.round(this.hiddenValue).toString();
+        // return Math.round(this.hiddenValue).toString();
       },
     },
   },

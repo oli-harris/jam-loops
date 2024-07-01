@@ -38,7 +38,9 @@
       </svg>
     </div>
 
-    <div class="mt-5 font-poppins text-lg text-rose-100">{{ loopTitle }}</div>
+    <div class="mt-5 font-poppins text-lg text-rose-100">
+      <MetaTextBox :defaultText="loop.loopTitle" @textValue="setLoopTitle" />
+    </div>
   </div>
 </template>
 
@@ -50,18 +52,6 @@ export default defineComponent({
     uuid: {
       type: String,
       required: true,
-    },
-    beats: {
-      type: Number,
-      required: true,
-    },
-    tracks: {
-      type: Number,
-      required: true,
-    },
-    loopTitle: {
-      type: String,
-      default: "untitled",
     },
   },
   data() {
@@ -147,6 +137,9 @@ export default defineComponent({
       }
 
       return refs;
+    },
+    setLoopTitle(newTitle: string) {
+      this.loop.loopTitle = newTitle;
     },
     // Add/remove notes
     toggleNote(event: MouseEvent) {
@@ -246,8 +239,8 @@ export default defineComponent({
       return useAppStore().addingTrack;
     },
     getSVGData(): SVGTrackData[] {
-      const beats = this.beats;
-      const tracks = this.tracks;
+      const beats = this.loop.beatCount;
+      const tracks = this.loop.trackCount;
 
       const holeRadius = 0.25;
 
@@ -293,9 +286,9 @@ export default defineComponent({
           const centerRadius = (outerTrackRadius + innerTrackRadius) / 2;
           const centerAngle = (angle1 + angle2) / 2;
 
-          // Converts to cartesian coordinates
-          const cx = centerRadius * Math.cos(centerAngle);
-          const cy = centerRadius * Math.sin(centerAngle);
+          // Converts to cartesian coordinates, fixed to 5dp so no server-client mismatch
+          const cx = (centerRadius * Math.cos(centerAngle)).toFixed(5);
+          const cy = (centerRadius * Math.sin(centerAngle)).toFixed(5);
 
           SVGData[track].beat.push([v1x, v1y, v2x, v2y, v3x, v3y, v4x, v4y, cx, cy]);
         }
@@ -310,7 +303,7 @@ interface SVGTrackData {
   outerTrackRadius: number;
   innerTrackRadius: number;
   // v1x,  v1y,  v2x,  v2y,  v3x,  v3y,  v4x,  v4y,  cx,  cy,
-  beat: number[][];
+  beat: [number, number, number, number, number, number, number, number, string, string][];
 }
 </script>
 

@@ -1,10 +1,11 @@
 <template>
   <div
-    class="text-nowrap bg-inherit px-1 selection:bg-rose-400 selection:text-white focus:border-b-2 focus:border-rose-600 focus:outline-none"
+    class="min-w-4 text-nowrap bg-inherit px-1 selection:bg-rose-400 selection:text-white focus:border-b-2 focus:border-rose-600 focus:outline-none"
     placeholder=""
     @input="onInput"
     contenteditable
     @keydown.enter.prevent
+    @focusout="unfocus"
     spellcheck="false"
     ref="inputBox"
     v-once
@@ -21,6 +22,10 @@ export default defineComponent({
       default: 20,
     },
     defaultText: {
+      type: String,
+      default: "Untitled",
+    },
+    emptyValue: {
       type: String,
       default: "Untitled",
     },
@@ -50,16 +55,24 @@ export default defineComponent({
       }
 
       // Update text value
-      this.textValue = newText;
       target.textContent = newText;
-
+      this.textValue = newText;
       this.$emit("textValue", newText);
 
       // Sets correct curssor position
-      range.setStart(target.childNodes[0], cursorPosition);
-      range.collapse(true);
-      selection.removeAllRanges();
-      selection.addRange(range);
+      try {
+        range.setStart(target.childNodes[0], cursorPosition);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      } catch {}
+    },
+    unfocus() {
+      if (this.textValue !== "") return;
+
+      (this.$refs.inputBox as HTMLElement).textContent = this.emptyValue;
+      this.textValue = this.emptyValue;
+      this.$emit("textValue", this.emptyValue);
     },
   },
 });

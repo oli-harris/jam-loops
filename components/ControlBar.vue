@@ -13,6 +13,7 @@
         class="text-lg text-rose-100"
         :defaultText="projectTitle"
         @textValue="setProjectTitle"
+        emptyValue="Untitled Project"
       />
     </div>
     <div class="justify-self-center text-rose-100">
@@ -21,7 +22,7 @@
           Tempo:
           <MetaNumberAdjuster
             class="text-lg"
-            :default-value="120"
+            :default-value="controllerStore.tempo"
             :min="0"
             :max="200"
             @number-value="setTempo"
@@ -66,7 +67,13 @@
         </div>
 
         <div class="ml-4 mr-2">Volume</div>
-        <MetaSlider class="w-20" :min="0" :max="1" @slider-value="setVolume" :default-value="0.8" />
+        <MetaSlider
+          class="w-20"
+          :min="0"
+          :max="1"
+          @slider-value="setVolume"
+          :default-value="controllerStore.volume"
+        />
       </div>
     </div>
     <div class="justify-self-end text-rose-700"></div>
@@ -109,8 +116,13 @@ export default defineComponent({
         this.projectStore.projectTitle = newTitle;
       },
     },
-    playing() {
-      return this.controllerStore.playing;
+    playing: {
+      get() {
+        return this.controllerStore.playing;
+      },
+      set(playing: Boolean) {
+        this.controllerStore.playing = this.playing;
+      },
     },
   },
 });

@@ -29,7 +29,9 @@
 
     <!-- View -->
     <div class="mt-2 flex-1 py-4">
-      <component :is="viewSelected" />
+      <SidebarTracks v-if="viewName == 'SidebarTracks'" />
+      <SidebarMelodies v-if="viewName == 'SidebarMelodies'" />
+      <SidebarLoops v-if="viewName == 'SidebarLoops'" />
     </div>
   </div>
 </template>
@@ -37,21 +39,13 @@
 <script lang="ts">
 export default defineComponent({
   data() {
-    // Bad way to do it, causes reactivity errors
     return {
       viewName: "SidebarTracks",
-      viewSelected: resolveComponent("SidebarTracks"),
-      views: {
-        SidebarTracks: resolveComponent("SidebarTracks"),
-        SidebarMelodies: resolveComponent("SidebarMelodies"),
-        SidebarLoops: resolveComponent("SidebarLoops"),
-      },
     };
   },
   methods: {
     switchView(this: any, view: string) {
       this.viewName = view;
-      this.viewSelected = this.views[view];
     },
   },
 });

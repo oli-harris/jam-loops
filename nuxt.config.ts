@@ -16,4 +16,9 @@ export default defineNuxtConfig({
       Raleway: true,
     },
   },
+  runtimeConfig: {
+    public: {
+      baseURL: process.env.URL,
+    },
+  },
 });
