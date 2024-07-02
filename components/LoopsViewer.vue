@@ -1,12 +1,7 @@
 <template>
   <div class="loopviewer grid gap-8 p-4">
     <div v-for="(loop, position) in positionedLoops" :key="position">
-      <Loop
-        :uuid="loop.uuid"
-        :beats="loop.beatCount"
-        :tracks="loop.trackCount"
-        :loopTitle="loop.loopTitle"
-      />
+      <Loop :uuid="loop.uuid" />
     </div>
   </div>
 </template>

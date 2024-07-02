@@ -6,7 +6,7 @@
     :max="max"
     @mousedown="mouseDown"
     @mouseup="mouseUp"
-    v-model="inputValue"
+    v-model.number="inputValue"
     ref="input"
     @input="input"
     @selectstart.prevent

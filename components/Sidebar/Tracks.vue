@@ -41,7 +41,6 @@ export default defineComponent({
       event.dataTransfer.dropEffect = "copy";
       event.dataTransfer.effectAllowed = "copy";
 
-      console.log(this.appStore.addingTrack);
       this.appStore.addingTrack = true;
       this.appStore.trackSample = sampleUuid;
     },

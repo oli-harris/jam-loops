@@ -5,9 +5,16 @@ export const useLoopsStore = defineStore({
   id: "loopsStore",
   state: () => ({
     loops: {} as Loops,
+    maxTracks: 5,
+    minTracks: 1,
+    maxBeats: 16,
+    minBeats: 2,
   }),
   persist: true,
   getters: {
+    loop(state) {
+      return (uuid: string) => state.loops[uuid];
+    },
     positionedLoops(): Loop[] {
       // Returns an array of loops sorted by position
       const loops = this.loopsArray;
@@ -16,12 +23,12 @@ export const useLoopsStore = defineStore({
 
       return loops;
     },
-    loopsArray(): Loop[] {
-      const loops = Object.values(this.loops);
+    loopsArray(state): Loop[] {
+      const loops = Object.values(state.loops);
 
       return loops;
     },
-    getAllRhythms(): { beatCount: number; uuid: string }[] {
+    getAllRhythms(state): { beatCount: number; uuid: string }[] {
       // Seperates different loops of same beatcount into object and list of uuids
       const loops = this.loopsArray;
 
@@ -63,6 +70,34 @@ export const useLoopsStore = defineStore({
 
       this.loops[uuid] = newLoop;
     },
+    deleteLoop(uuid: string) {
+      delete this.loops[uuid];
+    },
+    // Editing loops funcitonality
+    addTrack(uuid: string, position: number) {
+      const loop = this.loops[uuid];
+
+      const trackCount = loop.trackCount;
+      const beatCount = loop.beatCount;
+
+      console.log(loop.tracksData);
+
+      const trackData = {
+        trackSample: "",
+        beats: Array.from({ length: beatCount }, () => false),
+      };
+
+      loop.tracksData.splice(position, 0, trackData);
+
+      console.log(loop.tracksData);
+    },
+    removeTrack(uuid: string, position: number) {
+      console.log("removeTrack");
+      console.log(this.loops[uuid].tracksData);
+      this.loops[uuid].tracksData.splice(position, 1);
+      console.log(this.loops[uuid].tracksData);
+    },
+    // Notes functionality
     addNote(uuid: string, beat: number, track: number) {
       const selectedLoop = this.loops[uuid];
 

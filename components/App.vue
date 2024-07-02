@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen select-none flex-col overflow-hidden font-poppins">
+  <div class="relative flex h-screen select-none flex-col overflow-hidden font-poppins">
     <header class="h-16 bg-stone-950">
       <ControlBar />
     </header>
@@ -13,8 +13,10 @@
         <LoopsViewer />
       </main>
     </div>
+
+    <MutedPopup />
+    <RightClick />
   </div>
-  <MutedPopup />
 </template>
 
 <script lang="ts">

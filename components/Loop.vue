@@ -1,5 +1,8 @@
 <template>
-  <div class="flex h-full select-none flex-col items-center justify-center">
+  <div
+    class="flex h-full select-none flex-col items-center justify-center"
+    v-rightclick="['loop', uuid]"
+  >
     <div class="loop aspect-square h-[20rem] select-none">
       <svg
         ref="loop"
@@ -8,8 +11,11 @@
         height="100%"
         viewBox="-1.05 -1.05 2.1 2.1"
       >
-        <g v-for="(track, trackNumber) in getSVGData">
-          <g v-for="([v1x, v1y, v2x, v2y, v3x, v3y, v4x, v4y, cx, cy], beatNumber) in track.beat">
+        <g v-for="(track, trackNumber) in getSVGData" :key="trackNumber">
+          <g
+            v-for="([v1x, v1y, v2x, v2y, v3x, v3y, v4x, v4y, cx, cy], beatNumber) in track.beat"
+            :key="beatNumber"
+          >
             <!-- Beat sector -->
             <path
               :d="`M ${v1x} ${v1y}
@@ -45,8 +51,6 @@
 </template>
 
 <script lang="ts">
-import { useLoopsStore } from "#imports";
-
 export default defineComponent({
   props: {
     uuid: {
@@ -56,7 +60,6 @@ export default defineComponent({
   },
   data() {
     return {
-      loop: useLoopsStore().loops[this.uuid],
       trackAddingTo: 0,
     };
   },
@@ -235,12 +238,25 @@ export default defineComponent({
     },
   },
   computed: {
+    loops(): Loops {
+      console.log("loop");
+      const { loops } = storeToRefs(useLoopsStore());
+
+      return loops.value;
+    },
+    loop(): Loop {
+      return this.loops[this.uuid];
+    },
     isAddingTrack(): boolean {
       return useAppStore().addingTrack;
     },
     getSVGData(): SVGTrackData[] {
-      const beats = this.loop.beatCount;
-      const tracks = this.loop.trackCount;
+      console.log("get svg data");
+      const { loops } = storeToRefs(useLoopsStore());
+      const loop = this.loop;
+
+      const beats = loop.beatCount;
+      const tracks = loop.trackCount;
 
       const holeRadius = 0.25;
 

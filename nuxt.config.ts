@@ -8,7 +8,16 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
-  modules: ["@nuxtjs/google-fonts", "@pinia/nuxt", "@pinia-plugin-persistedstate/nuxt"],
+  plugins: [
+    { src: "~/plugins/rightClick-directive.client.ts", mode: "client" },
+    { src: "~/plugins/rightClick-directive.server.ts", mode: "server" },
+  ],
+  modules: [
+    "@nuxtjs/google-fonts",
+    "@pinia/nuxt",
+    "@pinia-plugin-persistedstate/nuxt",
+    "@nuxt/icon"
+  ],
   googleFonts: {
     families: {
       Kanit: true,
