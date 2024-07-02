@@ -18,52 +18,21 @@
     </div>
     <div class="justify-self-center text-rose-100">
       <div class="flex flex-row items-center">
-        <div class="flex flex-row items-center gap-2">
-          Tempo:
-          <MetaNumberAdjuster
-            class="text-lg"
-            :default-value="controllerStore.tempo"
-            :min="0"
-            :max="200"
-            @number-value="setTempo"
-          />
-        </div>
+        <div class="mr-2">Tempo</div>
+        <MetaNumberAdjuster
+          class="text-lg"
+          :default-value="Number(controllerStore.tempo)"
+          :min="0"
+          :max="200"
+          @number-value="setTempo"
+        />
 
-        <div class="ml-2 text-rose-100">{{ playing ? "Playing" : "Paused" }}</div>
-        <div @click="togglePlay" v-if="!playing">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-7 w-9 cursor-pointer stroke-rose-600"
-            width="32"
-            height="32"
-            viewBox="0 0 24 24"
-            stroke-width="4"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path d="M7 4v16l13 -8z" />
-          </svg>
+        <div class="ml-2">{{ playing ? "Playing" : "Paused" }}</div>
+        <div @click="togglePlay" v-show="!playing" class="h-10">
+          <Icon name="ic:round-play-arrow" class="h-10 w-10 text-rose-600" />
         </div>
-        <div @click="togglePlay" v-if="playing">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-9 w-9 cursor-pointer fill-rose-600"
-            width="32"
-            height="32"
-            stroke-width="4"
-            viewBox="0 0 24 24"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path
-              d="M6 5m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z"
-            />
-            <path
-              d="M14 5m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z"
-            />
-          </svg>
+        <div @click="togglePlay" v-show="playing" class="h-9">
+          <Icon name="ic:round-pause" class="h-9 w-9 text-rose-600" />
         </div>
 
         <div class="ml-4 mr-2">Volume</div>
@@ -72,7 +41,7 @@
           :min="0"
           :max="1"
           @slider-value="setVolume"
-          :default-value="controllerStore.volume"
+          :default-value="Number(controllerStore.volume)"
         />
       </div>
     </div>

@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxt/icon": "^1.0.0",
     "@nuxtjs/google-fonts": "^3.2.0",
     "@pinia/nuxt": "^0.5.1",
     "animate.css": "^4.1.1",
@@ -20,6 +21,7 @@
     "vue-router": "^4.3.3"
   },
   "devDependencies": {
+    "@iconify-json/ic": "^1.1.17",
     "@pinia-plugin-persistedstate/nuxt": "^1.2.1",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
