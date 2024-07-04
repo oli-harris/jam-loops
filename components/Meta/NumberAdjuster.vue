@@ -1,7 +1,7 @@
 <template>
   <input
     type="number"
-    class="w-10 cursor-ew-resize !select-none bg-inherit text-rose-600 selection:bg-rose-400 selection:text-white hover:select-none focus:outline-none"
+    class="moz w-10 cursor-ew-resize !select-none bg-inherit text-rose-600 selection:bg-rose-400 selection:text-white hover:select-none focus:outline-none"
     :min="min"
     :max="max"
     @mousedown="mouseDown"
@@ -91,6 +91,12 @@ export default defineComponent({
 input::-webkit-inner-spin-button,
 input::-webkit-outer-spin-button {
   -webkit-appearance: none;
+  -moz-appearance: textfield;
+
   margin: 0;
+}
+input {
+  appearance: none;
+  -moz-appearance: textfield;
 }
 </style>

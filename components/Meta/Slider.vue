@@ -2,7 +2,7 @@
   <div class="flex items-center">
     <input
       type="range"
-      class="h-3 w-full cursor-grab appearance-none bg-transparent accent-rose-600 [&::-webkit-slider-runnable-track]:h-[6px] [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-thumb]:mt-[-5px] [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-rose-600"
+      class="h-3 w-full cursor-grab appearance-none bg-transparent"
       :style="{ '--value': `${sliderPercentage()}%` }"
       :class="{ '!cursor-grabbing': sliding }"
       :min="min"
@@ -53,9 +53,55 @@ export default defineComponent({
 
 <!-- Custom styles to create two-tone design -->
 <style scoped lang="scss">
-input {
+input[type="range"] {
   &::-webkit-slider-runnable-track {
-    background: linear-gradient(to right, #f43f5e 0% var(--value), #fecdd3 var(--value) 100%);
+    background: linear-gradient(
+      to right,
+      rgb(244 63 94) 0% var(--value),
+      #fecdd3 var(--value) 100%
+    );
+  }
+
+  &::-moz-range-track {
+    background: linear-gradient(
+      to right,
+      rgb(244 63 94) 0% var(--value),
+      #fecdd3 var(--value) 100%
+    );
+  }
+
+  &::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 9999px;
+  }
+
+  &::-moz-range-track {
+    height: 6px;
+    border-radius: 9999px;
+  }
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: rgb(225 29 72);
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 50%;
+    margin-top: -5px;
+    box-shadow: -5px 2px 15px -2px rgba(0, 0, 0, 0.6);
+    -webkit-box-shadow: -5px 2px 15px -2px rgba(0, 0, 0, 0.6);
+  }
+
+  &::-moz-range-thumb {
+    background-color: rgb(225 29 72);
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 50%;
+    margin-top: -5px;
+    box-shadow: -5px 2px 15px -2px rgba(0, 0, 0, 0.6);
+    -moz-box-shadow: -5px 2px 15px -2px rgba(0, 0, 0, 0.6);
   }
 
   --value: 50%;
