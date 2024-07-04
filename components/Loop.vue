@@ -30,14 +30,14 @@
               @dragover="dragOverBeat"
               @dragleave="dragLeaveBeat"
               @drop="dropTrack"
-              :ref="beatRefName(trackNumber, beatNumber)"
+              :ref="(el) => setBeatRef(el, trackNumber, beatNumber)"
             ></path>
             <circle
               :cx="cx"
               :cy="cy"
               r="0.045"
               :class="['note', { disabled: !loop.tracksData[trackNumber].beats[beatNumber] }]"
-              :ref="noteRefName(trackNumber, beatNumber)"
+              :ref="(el) => setNoteRef(el, trackNumber, beatNumber)"
             ></circle>
           </g>
         </g>
@@ -50,270 +50,98 @@
   </div>
 </template>
 
-<script lang="ts">
-export default defineComponent({
-  props: {
-    uuid: {
-      type: String,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      trackAddingTo: 0,
-    };
-  },
-  mounted() {
-    this.loop.onBeat = this.onBeat;
-    this.loop.resetBeat = this.resetBeat;
-  },
-  methods: {
-    // Helper functions
-    beatRefName(track: number, beat: number) {
-      return `beat-${track}-${beat}`;
-    },
-    noteRefName(track: number, beat: number) {
-      return `note-${track}-${beat}`;
-    },
-    allBeatsInTrack(track: number): SVGPathElement[] {
-      const beatCount = this.loop.beatCount;
+<script setup lang="ts">
+import type { ComponentPublicInstance } from "vue";
 
-      const refs = [];
-
-      for (let beat = 0; beat < beatCount; beat++) {
-        const refName = this.beatRefName(track, beat);
-        refs.push((this.$refs[refName] as SVGPathElement[])[0]);
-      }
-
-      return refs;
-    },
-    allBeatElements(): SVGPathElement[] {
-      const trackCount = this.loop.trackCount;
-      const beatCount = this.loop.beatCount;
-
-      const refs = [];
-
-      for (let track = 0; track < trackCount; track++) {
-        for (let beat = 0; beat < beatCount; beat++) {
-          const refName = this.beatRefName(track, beat);
-          refs.push((this.$refs[refName] as SVGPathElement[])[0]);
-        }
-      }
-
-      return refs;
-    },
-    allNoteElements(): SVGPathElement[] {
-      const trackCount = this.loop.trackCount;
-      const beatCount = this.loop.beatCount;
-
-      const refs = [];
-
-      for (let track = 0; track < trackCount; track++) {
-        for (let beat = 0; beat < beatCount; beat++) {
-          const refName = this.noteRefName(track, beat);
-          refs.push((this.$refs[refName] as SVGPathElement[])[0]);
-        }
-      }
-
-      return refs;
-    },
-    allBeatsOnBeat(beat: number): SVGPathElement[] {
-      const trackCount = this.loop.trackCount;
-
-      const refs = [];
-
-      for (let track = 0; track < trackCount; track++) {
-        const refName = this.beatRefName(track, beat);
-        refs.push((this.$refs[refName] as SVGPathElement[])[0]);
-      }
-
-      return refs;
-    },
-    allNotesOnBeat(beat: number): SVGPathElement[] {
-      const trackCount = this.loop.trackCount;
-
-      const refs = [];
-
-      for (let track = 0; track < trackCount; track++) {
-        const refName = this.noteRefName(track, beat);
-        refs.push((this.$refs[refName] as SVGPathElement[])[0]);
-      }
-
-      return refs;
-    },
-    setLoopTitle(newTitle: string) {
-      this.loop.loopTitle = newTitle;
-    },
-    // Add/remove notes
-    toggleNote(event: MouseEvent) {
-      const noteElement = event.target as SVGPathElement;
-
-      // Get track and beat from element
-      const track = parseInt(noteElement.getAttribute("track") || "0");
-      const beat = parseInt(noteElement.getAttribute("beat") || "0");
-
-      // Get note element
-      const note = this.loop.tracksData[track].beats[beat];
-
-      // Toggle note
-      this.loop.tracksData[track].beats[beat] = !note;
-
-      if (note) return noteElement.classList.add("disabled");
-      noteElement.classList.remove("disabled");
-
-      // Play sample on addition
-      const sampleUuid = this.loop.tracksData[track].trackSample;
-      useControllerStore().previewNote(sampleUuid);
-    },
-    // Drag and drop track functionality
-    dragOverBeat(event: MouseEvent) {
-      event.preventDefault();
-      if (!this.isAddingTrack) return;
-      // Adds adding-track class to all beats
-
-      const target = event.target as SVGPathElement;
-      const track = parseInt(target.getAttribute("track") || "0");
-      this.trackAddingTo = track;
-
-      this.allBeatsInTrack(track).forEach((element: SVGPathElement) => {
-        element.classList.add("adding-track");
-      });
-    },
-    dragLeaveBeat(event: MouseEvent) {
-      event.preventDefault();
-      if (!this.isAddingTrack) return;
-      // Removes adding-track class from all beats when being dragged over
-
-      const target = event.target as SVGPathElement;
-      const track = parseInt(target.getAttribute("track") || "0");
-
-      this.allBeatsInTrack(track).forEach((element: SVGPathElement) => {
-        element.classList.remove("adding-track");
-      });
-    },
-    dropTrack(event: DragEvent) {
-      if (!this.isAddingTrack) return;
-
-      // Assign sample to track
-      const sample = useAppStore().trackSample;
-      const track = this.trackAddingTo;
-
-      this.loop.tracksData[track].trackSample = sample;
-
-      // For each beat in track
-      this.allBeatsInTrack(track).forEach((element: SVGPathElement) => {
-        // Remove adding-track class as track nolonger being dragged
-        element.classList.remove("adding-track");
-      });
-
-      // Play sample
-      useControllerStore().previewNote(sample);
-    },
-    // Animate beats
-    onBeat() {
-      // Prevents schedlued animations from playing after noolonger playing
-      if (!this.loop.isPlaying) return;
-
-      // Need to -1 from current beat as function is scheduled to be called after beat has incrememented
-      const beat = (this.loop.currentBeat - 1 + this.loop.beatCount) % this.loop.beatCount;
-
-      // Add class to sectors and notes on current beat in each track
-      this.allBeatsOnBeat(beat).forEach((beat) => beat.classList.add("beat-onBeat"));
-      this.allNotesOnBeat(beat).forEach((note) => note.classList.add("note-onBeat"));
-
-      // Remove class from sectors and notes on previous beat in each track
-      this.allBeatsOnBeat((beat - 1 + this.loop.beatCount) % this.loop.beatCount).forEach((track) =>
-        track.classList.remove("beat-onBeat"),
-      );
-      this.allNotesOnBeat((beat - 1 + this.loop.beatCount) % this.loop.beatCount).forEach((note) =>
-        note.classList.remove("note-onBeat"),
-      );
-    },
-    resetBeat() {
-      this.loop.currentBeat = 0;
-
-      // Remove class from all beats and notes
-      this.allBeatElements().forEach((beat) => beat.classList.remove("beat-onBeat"));
-      this.allNoteElements().forEach((note) => note.classList.remove("note-onBeat"));
-    },
-  },
-  computed: {
-    loops(): Loops {
-      console.log("loop");
-      const { loops } = storeToRefs(useLoopsStore());
-
-      return loops.value;
-    },
-    loop(): Loop {
-      return this.loops[this.uuid];
-    },
-    isAddingTrack(): boolean {
-      return useAppStore().addingTrack;
-    },
-    getSVGData(): SVGTrackData[] {
-      console.log("get svg data");
-      const { loops } = storeToRefs(useLoopsStore());
-      const loop = this.loop;
-
-      const beats = loop.beatCount;
-      const tracks = loop.trackCount;
-
-      const holeRadius = 0.25;
-
-      // Angle starts 12 oclock, in radians
-      const startAngle = -Math.PI / 2;
-      const intervalAngle = (2 * Math.PI) / beats;
-
-      const widthBetweenTracks = (1 - holeRadius) / tracks;
-
-      let SVGData = [] as SVGTrackData[];
-
-      for (let track = 0; track < tracks; track++) {
-        let outerTrackRadius = 1 - widthBetweenTracks * track;
-        let innerTrackRadius = 1 - widthBetweenTracks * (track + 1);
-
-        SVGData.push({
-          outerTrackRadius: outerTrackRadius,
-          innerTrackRadius: innerTrackRadius,
-          beat: [],
-        });
-
-        for (let beat = 0; beat < beats; beat++) {
-          // Two angles which define sector
-          let angle1 = startAngle + intervalAngle * beat;
-          let angle2 = startAngle + intervalAngle * (beat + 1);
-
-          // Obtains positions of each vertex of segment for a unit circle
-          const getVertex = (angle: number, radius: number): [number, number] => {
-            const x = radius * Math.cos(angle);
-            const y = radius * Math.sin(angle);
-
-            return [x, y];
-          };
-
-          // Gets coordinates of vertices
-          const [v1x, v1y] = getVertex(angle1, outerTrackRadius);
-          const [v2x, v2y] = getVertex(angle2, outerTrackRadius);
-
-          const [v3x, v3y] = getVertex(angle1, innerTrackRadius);
-          const [v4x, v4y] = getVertex(angle2, innerTrackRadius);
-
-          // Calculates polar coordinate of mean point
-          const centerRadius = (outerTrackRadius + innerTrackRadius) / 2;
-          const centerAngle = (angle1 + angle2) / 2;
-
-          // Converts to cartesian coordinates, fixed to 5dp so no server-client mismatch
-          const cx = (centerRadius * Math.cos(centerAngle)).toFixed(5);
-          const cy = (centerRadius * Math.sin(centerAngle)).toFixed(5);
-
-          SVGData[track].beat.push([v1x, v1y, v2x, v2y, v3x, v3y, v4x, v4y, cx, cy]);
-        }
-      }
-
-      return SVGData;
-    },
+// Props
+const props = defineProps({
+  uuid: {
+    type: String,
+    required: true,
   },
 });
+
+let trackAddingTo = 0;
+
+// Refs
+interface ElementRefs {
+  [key: number]: Element;
+}
+
+interface TrackRefs {
+  [key: number]: ElementRefs;
+}
+
+const beatRefs = ref<TrackRefs>({});
+const noteRefs = ref<TrackRefs>({});
+
+const setBeatRef = (
+  el: Element | ComponentPublicInstance | null,
+  trackNumber: number,
+  beatNumber: number,
+) => {
+  if (!(el instanceof Element)) return;
+
+  beatRefs.value[trackNumber] ??= {};
+  beatRefs.value[trackNumber][beatNumber] = el;
+};
+
+const setNoteRef = (
+  el: Element | ComponentPublicInstance | null,
+  trackNumber: number,
+  beatNumber: number,
+) => {
+  if (!(el instanceof Element)) return;
+
+  noteRefs.value[trackNumber] ??= {};
+  noteRefs.value[trackNumber][beatNumber] = el;
+};
+
+const allRefsInTrack = (refs: globalThis.Ref<TrackRefs>, track: number): Element[] => {
+  return Object.values(refs.value[track]);
+};
+
+const allRefsOnBeat = (refs: globalThis.Ref<TrackRefs>, beat: number): Element[] => {
+  const refsArray = [] as Element[];
+
+  Object.values(refs.value).forEach((trackRefs: ElementRefs) => {
+    const beatElement = trackRefs[beat];
+
+    refsArray.push(beatElement);
+  });
+
+  return refsArray;
+};
+
+const allRefs = (refs: globalThis.Ref<TrackRefs>): Element[] => {
+  const refArray = [] as Element[];
+
+  Object.values(refs.value).forEach((elementRefs: ElementRefs) => {
+    Object.values(elementRefs).forEach((element: Element) => {
+      refArray.push(element);
+    });
+  });
+
+  return refArray;
+};
+
+// Access stores
+const loopsStore = useLoopsStore();
+const { loops } = storeToRefs(loopsStore);
+const loop = computed(() => loops.value[props.uuid]);
+const isAddingTrack = computed(() => useAppStore().addingTrack);
+
+// Life cycle hooks
+onMounted(() => {
+  loop.value.onBeat = onBeat;
+  loop.value.resetBeat = resetBeat;
+});
+
+const setLoopTitle = (newTitle: string) => {
+  loop.value.loopTitle = newTitle;
+};
+
+// Create loops SVG
 
 interface SVGTrackData {
   outerTrackRadius: number;
@@ -321,6 +149,165 @@ interface SVGTrackData {
   // v1x,  v1y,  v2x,  v2y,  v3x,  v3y,  v4x,  v4y,  cx,  cy,
   beat: [number, number, number, number, number, number, number, number, string, string][];
 }
+
+const getSVGData = computed((): SVGTrackData[] => {
+  const beats = loop.value.beatCount;
+  const tracks = loop.value.tracksData.length;
+
+  const holeRadius = 0.25;
+
+  // Angle starts 12 oclock, in radians
+  const startAngle = -Math.PI / 2;
+  const intervalAngle = (2 * Math.PI) / beats;
+
+  const widthBetweenTracks = (1 - holeRadius) / tracks;
+
+  let SVGData = [] as SVGTrackData[];
+
+  for (let track = 0; track < tracks; track++) {
+    let outerTrackRadius = 1 - widthBetweenTracks * track;
+    let innerTrackRadius = 1 - widthBetweenTracks * (track + 1);
+
+    SVGData.push({
+      outerTrackRadius: outerTrackRadius,
+      innerTrackRadius: innerTrackRadius,
+      beat: [],
+    });
+
+    for (let beat = 0; beat < beats; beat++) {
+      // Two angles which define sector
+      let angle1 = startAngle + intervalAngle * beat;
+      let angle2 = startAngle + intervalAngle * (beat + 1);
+
+      // Obtains positions of each vertex of segment for a unit circle
+      const getVertex = (angle: number, radius: number): [number, number] => {
+        const x = radius * Math.cos(angle);
+        const y = radius * Math.sin(angle);
+
+        return [x, y];
+      };
+
+      // Gets coordinates of vertices
+      const [v1x, v1y] = getVertex(angle1, outerTrackRadius);
+      const [v2x, v2y] = getVertex(angle2, outerTrackRadius);
+
+      const [v3x, v3y] = getVertex(angle1, innerTrackRadius);
+      const [v4x, v4y] = getVertex(angle2, innerTrackRadius);
+
+      // Calculates polar coordinate of mean point
+      const centerRadius = (outerTrackRadius + innerTrackRadius) / 2;
+      const centerAngle = (angle1 + angle2) / 2;
+
+      // Converts to cartesian coordinates, fixed to 5dp so no server-client mismatch
+      const cx = (centerRadius * Math.cos(centerAngle)).toFixed(5);
+      const cy = (centerRadius * Math.sin(centerAngle)).toFixed(5);
+
+      SVGData[track].beat.push([v1x, v1y, v2x, v2y, v3x, v3y, v4x, v4y, cx, cy]);
+    }
+  }
+
+  return SVGData;
+});
+
+// Add/remove notes
+
+const toggleNote = (event: MouseEvent) => {
+  const noteElement = event.target as Element;
+
+  // Get track and beat from element
+  const track = parseInt(noteElement.getAttribute("track") || "0");
+  const beat = parseInt(noteElement.getAttribute("beat") || "0");
+
+  // Get note element
+  const note = loop.value.tracksData[track].beats[beat];
+
+  // Toggle note
+  loop.value.tracksData[track].beats[beat] = !note;
+
+  if (note) return noteElement.classList.add("disabled");
+  noteElement.classList.remove("disabled");
+
+  // Play sample on addition
+  const sampleUuid = loop.value.tracksData[track].trackSample;
+  useControllerStore().previewNote(sampleUuid);
+};
+
+// Drag and drop tracks
+
+const dragOverBeat = (event: MouseEvent) => {
+  event.preventDefault();
+  if (!isAddingTrack) return;
+
+  // Adds adding-track class to all beats
+  const target = event.target as Element;
+  const track = parseInt(target.getAttribute("track") || "0");
+  trackAddingTo = track;
+
+  allRefsInTrack(beatRefs, track).forEach((element: Element) => {
+    element.classList.add("adding-track");
+  });
+};
+
+const dragLeaveBeat = (event: MouseEvent) => {
+  event.preventDefault();
+  if (!isAddingTrack) return;
+
+  // Removes adding-track class from all beats when being dragged over
+  const target = event.target as Element;
+  const track = parseInt(target.getAttribute("track") || "0");
+
+  allRefsInTrack(beatRefs, track).forEach((element: Element) => {
+    element.classList.remove("adding-track");
+  });
+};
+
+const dropTrack = (event: DragEvent) => {
+  if (!isAddingTrack) return;
+
+  // Assign sample to track
+  const sample = useAppStore().trackSample;
+  const track = trackAddingTo;
+
+  loop.value.tracksData[track].trackSample = sample;
+
+  // Remove adding-track class as track nolonger being dragged
+  allRefsInTrack(beatRefs, track).forEach((element: Element) => {
+    element.classList.remove("adding-track");
+  });
+
+  // Play sample
+  useControllerStore().previewNote(sample);
+};
+
+// Animate beats
+
+const onBeat = () => {
+  // Prevents schedlued animations from playing after noolonger playing
+  if (!loop.value.isPlaying) return;
+
+  // Need to -1 from current beat as function is scheduled to be called after beat has incrememented
+  const beat = (loop.value.currentBeat - 1 + loop.value.beatCount) % loop.value.beatCount;
+
+  // Add class to sectors and notes on current beat in each track
+  allRefsOnBeat(beatRefs, beat).forEach((beat) => beat.classList.add("beat-onBeat"));
+  allRefsOnBeat(noteRefs, beat).forEach((note) => note.classList.add("note-onBeat"));
+
+  // Remove class from sectors and notes on previous beat in each track
+  allRefsOnBeat(beatRefs, (beat - 1 + loop.value.beatCount) % loop.value.beatCount).forEach(
+    (track) => track.classList.remove("beat-onBeat"),
+  );
+  allRefsOnBeat(beatRefs, (beat - 1 + loop.value.beatCount) % loop.value.beatCount).forEach(
+    (note) => note.classList.remove("note-onBeat"),
+  );
+};
+
+const resetBeat = () => {
+  loop.value.currentBeat = 0;
+
+  // Remove class from all beats and notes
+  allRefs(beatRefs).forEach((beat) => beat.classList.remove("beat-onBeat"));
+  allRefs(noteRefs).forEach((note) => note.classList.remove("note-onBeat"));
+};
 </script>
 
 <!-- Custom styles instead of tailwind -->

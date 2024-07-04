@@ -77,10 +77,7 @@ export const useLoopsStore = defineStore({
     addTrack(uuid: string, position: number) {
       const loop = this.loops[uuid];
 
-      const trackCount = loop.trackCount;
       const beatCount = loop.beatCount;
-
-      console.log(loop.tracksData);
 
       const trackData = {
         trackSample: "",
@@ -88,14 +85,9 @@ export const useLoopsStore = defineStore({
       };
 
       loop.tracksData.splice(position, 0, trackData);
-
-      console.log(loop.tracksData);
     },
     removeTrack(uuid: string, position: number) {
-      console.log("removeTrack");
-      console.log(this.loops[uuid].tracksData);
       this.loops[uuid].tracksData.splice(position, 1);
-      console.log(this.loops[uuid].tracksData);
     },
     // Notes functionality
     addNote(uuid: string, beat: number, track: number) {
@@ -124,7 +116,6 @@ export interface Loop {
   loopTitle: string; // Name of loop
   beatCount: number; // Number of beats
   currentBeat: number;
-  trackCount: number; // Number of tracks
   tracksData: Track[]; // Contents of each track, starting from outer track
 }
 
