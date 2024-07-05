@@ -71,12 +71,16 @@ export default defineComponent({
   methods: {
     clickLoopButton() {
       const popup = this.$refs.popup as any;
-
       if (!popup.popupVisible) return popup.openPopup();
 
       // Add new loop
       useLoopsStore().addEmptyLoop(this.loopTitle, this.beatCount, this.trackCount);
       popup.closePopup();
+
+      // Set to default values
+      this.loopTitle = "Untitled";
+      this.trackCount = 3;
+      this.beatCount = 8;
     },
     focusIn() {
       const popup = this.$refs.popup as any;
