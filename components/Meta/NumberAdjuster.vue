@@ -1,14 +1,13 @@
 <template>
   <input
-    type="number"
     class="moz w-10 cursor-ew-resize !select-none bg-inherit text-rose-600 selection:bg-rose-400 selection:text-white hover:select-none focus:outline-none"
     :min="min"
     :max="max"
     @mousedown="mouseDown"
     @mouseup="mouseUp"
-    v-model.number="inputValue"
     ref="input"
-    @input="input"
+    v-model="inputValue"
+    @input="onInput"
     @selectstart.prevent
   />
 </template>
@@ -37,8 +36,14 @@ export default defineComponent({
   },
   emits: ["numberValue"],
   methods: {
-    input() {
-      this.$emit("numberValue", Math.round(this.hiddenValue));
+    onInput(event: Event) {
+      const value = (event.target as HTMLInputElement).value;
+
+      let newValue = value.replace(/[^0-9.]/g, "").replace(/(\..*?)\..*/g, "$1") || "0";
+
+      const valueFloat = this.correctInput(parseFloat(newValue));
+
+      (event.target as HTMLInputElement).value = valueFloat.toString();
     },
     mouseDown(event: MouseEvent) {
       this.startX = event.clientX;
@@ -74,13 +79,10 @@ export default defineComponent({
   computed: {
     inputValue: {
       get() {
-        // Simplifies number
         return Math.round(this.hiddenValue).toString();
       },
       set(newValue: string) {
         this.hiddenValue = this.correctInput(parseInt(newValue));
-
-        // return Math.round(this.hiddenValue).toString();
       },
     },
   },
