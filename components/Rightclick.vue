@@ -9,16 +9,24 @@
       class="text-md rounded-md border-2 border-solid border-rose-800 bg-stone-950 py-1"
       @contextmenu.prevent
     >
-      <div v-for="option in options" @click="option.handler">
+      <div v-for="menuItem in contextMenu">
+        <div v-if="menuItem.type === 'information'" class="mt-1 text-center font-black text-white">
+          {{ menuItem.information }}
+        </div>
+
         <button
           class="flex w-full flex-row items-center justify-start py-2 pl-2.5 pr-3.5 hover:bg-stone-800"
+          v-if="menuItem.type === 'button'"
+          @click="menuItem.handler"
         >
-          <Icon :name="option.optionIcon" class="mr-2 h-6 w-6 text-rose-400" />
-          <div class="flex-start flex w-full text-rose-50">
-            {{ option.optionName }}
-          </div>
+          <Icon :name="menuItem.itemIcon || ''" class="mr-2 h-6 w-6 text-rose-400" />
+          <div class="flex-start flex w-full text-rose-50">{{ menuItem.itemName }}</div>
         </button>
-        <hr v-if="option.spacer" class="mx-2 my-1.5 rounded-md border-t-[1px] border-rose-200" />
+
+        <hr
+          v-if="menuItem.type === 'spacer' || menuItem.type === 'information'"
+          class="mx-2 my-1.5 rounded-md border-t-[1px] border-rose-200"
+        />
       </div>
     </div>
   </MetaPopup>
@@ -28,7 +36,7 @@
 export default defineComponent({
   data() {
     return {
-      options: [] as rightClickOption[],
+      contextMenu: [] as ContextMenu,
       position: "",
       loopsStore: useLoopsStore(),
     };
@@ -37,7 +45,7 @@ export default defineComponent({
     // Bind right click function
     useRightClickStore().onRightClick = this.onRightClick;
     window.oncontextmenu = (event: MouseEvent) => {
-      event.preventDefault();
+      console.log("right click");
     };
   },
   methods: {
@@ -50,9 +58,12 @@ export default defineComponent({
         details = params[1];
       }
 
+      console.log(type);
+
       if (type == "loop") {
         this.rightClickLoop(event, details || "");
         this.displayRightClickMenu(event.clientX, event.clientY);
+      } else if (type == "other") {
       }
     },
     displayRightClickMenu(xPosition: number, yPosition: number) {
@@ -65,14 +76,13 @@ export default defineComponent({
     rightClickLoop(event: MouseEvent, uuid: string) {
       const element = document.elementFromPoint(event.clientX, event.clientY) as SVGElement;
 
-      console.log(element);
-
       // Specific beat
       if (element.nodeName === "path") {
-        const track = (element as SVGElement & { track: number; beat: number }).track;
-        const beat = (element as SVGElement & { track: number; beat: number }).beat;
+        const track = parseInt(element.getAttribute("track") || "");
+        const beat = parseInt(element.getAttribute("beat") || "");
 
         this.contextMenuBeat(uuid, track, beat);
+
         return;
       }
 
@@ -80,51 +90,98 @@ export default defineComponent({
       this.contextMenuLoopGeneral(uuid);
     },
     contextMenuLoopGeneral(uuid: string) {
-      this.options = [
+      this.contextMenu = [
         {
-          optionName: "Delete loop",
-          optionIcon: "ic:round-delete-forever",
+          type: "information",
+          information: this.loopsStore.loops[uuid].loopTitle,
+        },
+        {
+          type: "button",
+          itemName: "Delete loop",
+          itemIcon: "ic:round-delete-forever",
           handler: () => {
-            this.clickOption;
-            this.loopsStore.deleteLoop(uuid);
+            this.clickOption();
+            this.loopsStore.removeLiveLoop(uuid);
           },
         },
       ];
     },
     contextMenuBeat(uuid: string, track: number, beat: number) {
-      this.options = [
+      console.log(track, beat);
+
+      const sampleUuid = this.loopsStore.loops[uuid].tracksData[track].trackSample;
+      let trackName = "Empty track";
+
+      if (sampleUuid) {
+        const sample = useSamplesStore().samples[sampleUuid];
+        trackName = sample.sampleTitle;
+      }
+
+      (this.contextMenu = [
         {
-          optionName: "Add track",
-          optionIcon: "ic:round-add-circle-outline",
+          type: "information",
+          information: trackName,
+        },
+        {
+          type: "button",
+          itemName: "Add track",
+          itemIcon: "ic:round-add-circle-outline",
           handler: () => {
             this.clickOption();
             this.loopsStore.addTrack(uuid, track);
           },
-          hidden: this.loopsStore.loops[uuid].trackCount >= this.loopsStore.maxTracks,
+          hidden:
+            this.loopsStore.loops[uuid].tracksData.length >=
+            this.loopsStore.loopConstraints.maxTracks,
         },
         {
-          optionName: "Remove track",
-          optionIcon: "ic:round-remove-circle-outline",
-          spacer: true,
+          type: "button",
+          itemName: "Remove track",
+          itemIcon: "ic:round-remove-circle-outline",
           handler: () => {
             this.clickOption();
-            useLoopsStore().removeTrack(uuid, track);
+            this.loopsStore.removeTrack(uuid, track);
           },
-          hidden: this.loopsStore.loops[uuid].trackCount <= this.loopsStore.minTracks,
+          hidden:
+            this.loopsStore.loops[uuid].tracksData.length <=
+            this.loopsStore.loopConstraints.minTracks,
         },
         {
-          optionName: "Add beat",
-          optionIcon: "ic:round-add-circle-outline",
-          handler: () => {},
-          hidden: this.loopsStore.loops[uuid].beatCount >= this.loopsStore.maxBeats,
+          type: "spacer",
         },
         {
-          optionName: "Remove beat",
-          optionIcon: "ic:round-remove-circle-outline",
-          handler: () => {},
-          hidden: this.loopsStore.loops[uuid].beatCount <= this.loopsStore.minBeats,
+          type: "button",
+          itemName: "Add beat",
+          itemIcon: "ic:round-add-circle-outline",
+          handler: () => {
+            this.clickOption();
+            this.loopsStore.addBeat(uuid, beat);
+          },
+          hidden: this.loopsStore.loops[uuid].beatCount >= this.loopsStore.loopConstraints.maxBeats,
         },
-      ].filter((obj) => !obj.hidden);
+        {
+          type: "button",
+          itemName: "Remove beat",
+          itemIcon: "ic:round-remove-circle-outline",
+          handler: () => {
+            this.clickOption();
+            this.loopsStore.removeBeat(uuid, beat);
+          },
+          hidden: this.loopsStore.loops[uuid].beatCount <= this.loopsStore.loopConstraints.minBeats,
+        },
+        {
+          type: "spacer",
+        },
+        {
+          type: "button",
+          itemName: "Delete loop",
+          itemIcon: "ic:round-delete-forever",
+          handler: () => {
+            this.clickOption();
+            this.loopsStore.removeLiveLoop(uuid);
+          },
+        },
+      ] as ContextMenu).filter((obj) => !!!obj.hidden);
     },
     clickOption(): void {
       const popup = this.$refs.popup as any;
@@ -134,11 +191,24 @@ export default defineComponent({
   },
 });
 
-interface rightClickOption {
-  optionName: string;
-  optionIcon: string;
-  spacer?: boolean;
+interface ContextMenuItem {
+  type: "button";
+  itemName: string;
+  itemIcon?: string;
   hidden?: boolean;
   handler: () => void;
 }
+
+interface ContextMenuInformation {
+  type: "information";
+  information: string;
+  hidden?: boolean;
+}
+
+interface ContextMenuSpacer {
+  type: "spacer";
+  hidden?: boolean;
+}
+
+type ContextMenu = (ContextMenuItem | ContextMenuInformation | ContextMenuSpacer)[];
 </script>
