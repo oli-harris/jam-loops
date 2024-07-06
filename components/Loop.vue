@@ -51,8 +51,6 @@
 </template>
 
 <script setup lang="ts">
-import type { ComponentPublicInstance } from "vue";
-
 // Props
 const props = defineProps({
   uuid: {
@@ -80,7 +78,8 @@ const setBeatRef = (
   trackNumber: number,
   beatNumber: number,
 ) => {
-  if (!(el instanceof Element)) return;
+  // instanceof Element doesnt work on safari
+  if (!(el instanceof SVGPathElement)) return;
 
   beatRefs.value[trackNumber] ??= {};
   beatRefs.value[trackNumber][beatNumber] = el;
@@ -91,7 +90,7 @@ const setNoteRef = (
   trackNumber: number,
   beatNumber: number,
 ) => {
-  if (!(el instanceof Element)) return;
+  if (!(el instanceof SVGCircleElement)) return;
 
   noteRefs.value[trackNumber] ??= {};
   noteRefs.value[trackNumber][beatNumber] = el;
@@ -128,17 +127,19 @@ const allRefs = (refs: globalThis.Ref<TrackRefs>): Element[] => {
 // Access stores
 const loopsStore = useLoopsStore();
 const { loops } = storeToRefs(loopsStore);
-const loop = computed(() => loops.value[props.uuid]);
+const reactiveLoop = ref(loops.value[props.uuid]);
+const loop = computed(() => loops.value[props.uuid]); // Read only
+
 const isAddingTrack = computed(() => useAppStore().addingTrack);
 
 // Life cycle hooks
 onMounted(() => {
-  loop.value.onBeat = onBeat;
-  loop.value.resetBeat = resetBeat;
+  reactiveLoop.value.onBeat = onBeat;
+  reactiveLoop.value.resetBeat = resetBeat;
 });
 
 const setLoopTitle = (newTitle: string) => {
-  loop.value.loopTitle = newTitle;
+  reactiveLoop.value.loopTitle = newTitle;
 };
 
 // Create loops SVG
@@ -147,7 +148,7 @@ interface SVGTrackData {
   outerTrackRadius: number;
   innerTrackRadius: number;
   // v1x,  v1y,  v2x,  v2y,  v3x,  v3y,  v4x,  v4y,  cx,  cy,
-  beat: [number, number, number, number, number, number, number, number, string, string][];
+  beat: [string, string, string, string, string, string, string, string, string, string][];
 }
 
 const getSVGData = computed((): SVGTrackData[] => {
@@ -180,11 +181,11 @@ const getSVGData = computed((): SVGTrackData[] => {
       let angle2 = startAngle + intervalAngle * (beat + 1);
 
       // Obtains positions of each vertex of segment for a unit circle
-      const getVertex = (angle: number, radius: number): [number, number] => {
+      const getVertex = (angle: number, radius: number): [string, string] => {
         const x = radius * Math.cos(angle);
         const y = radius * Math.sin(angle);
 
-        return [x, y];
+        return [x.toFixed(10), y.toFixed(10)];
       };
 
       // Gets coordinates of vertices
@@ -199,8 +200,8 @@ const getSVGData = computed((): SVGTrackData[] => {
       const centerAngle = (angle1 + angle2) / 2;
 
       // Converts to cartesian coordinates, fixed to 5dp so no server-client mismatch
-      const cx = (centerRadius * Math.cos(centerAngle)).toFixed(5);
-      const cy = (centerRadius * Math.sin(centerAngle)).toFixed(5);
+      const cx = (centerRadius * Math.cos(centerAngle)).toFixed(10);
+      const cy = (centerRadius * Math.sin(centerAngle)).toFixed(10);
 
       SVGData[track].beat.push([v1x, v1y, v2x, v2y, v3x, v3y, v4x, v4y, cx, cy]);
     }
@@ -222,7 +223,7 @@ const toggleNote = (event: MouseEvent) => {
   const note = loop.value.tracksData[track].beats[beat];
 
   // Toggle note
-  loop.value.tracksData[track].beats[beat] = !note;
+  reactiveLoop.value.tracksData[track].beats[beat] = !note;
 
   if (note) return noteElement.classList.add("disabled");
   noteElement.classList.remove("disabled");
@@ -268,7 +269,7 @@ const dropTrack = (event: DragEvent) => {
   const sample = useAppStore().trackSample;
   const track = trackAddingTo;
 
-  loop.value.tracksData[track].trackSample = sample;
+  reactiveLoop.value.tracksData[track].trackSample = sample;
 
   // Remove adding-track class as track nolonger being dragged
   allRefsInTrack(beatRefs, track).forEach((element: Element) => {
@@ -296,13 +297,13 @@ const onBeat = () => {
   allRefsOnBeat(beatRefs, (beat - 1 + loop.value.beatCount) % loop.value.beatCount).forEach(
     (track) => track.classList.remove("beat-onBeat"),
   );
-  allRefsOnBeat(beatRefs, (beat - 1 + loop.value.beatCount) % loop.value.beatCount).forEach(
+  allRefsOnBeat(noteRefs, (beat - 1 + loop.value.beatCount) % loop.value.beatCount).forEach(
     (note) => note.classList.remove("note-onBeat"),
   );
 };
 
 const resetBeat = () => {
-  loop.value.currentBeat = 0;
+  reactiveLoop.value.currentBeat = 0;
 
   // Remove class from all beats and notes
   allRefs(beatRefs).forEach((beat) => beat.classList.remove("beat-onBeat"));
