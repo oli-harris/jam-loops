@@ -16,7 +16,7 @@ export default defineNuxtConfig({
     "@nuxtjs/google-fonts",
     "@pinia/nuxt",
     "@pinia-plugin-persistedstate/nuxt",
-    "@nuxt/icon"
+    "@nuxt/icon",
   ],
   googleFonts: {
     families: {
@@ -30,4 +30,5 @@ export default defineNuxtConfig({
       baseURL: process.env.URL,
     },
   },
+  ssr: false,
 });
