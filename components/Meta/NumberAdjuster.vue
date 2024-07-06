@@ -41,9 +41,11 @@ export default defineComponent({
 
       let newValue = value.replace(/[^0-9.]/g, "").replace(/(\..*?)\..*/g, "$1") || "0";
 
-      const valueFloat = this.correctInput(parseFloat(newValue));
+      this.hiddenValue = this.correctInput(parseFloat(newValue));
 
-      (event.target as HTMLInputElement).value = valueFloat.toString();
+      (event.target as HTMLInputElement).value = this.hiddenValue.toString();
+
+      this.$emit("numberValue", Math.round(this.hiddenValue));
     },
     mouseDown(event: MouseEvent) {
       this.startX = event.clientX;
