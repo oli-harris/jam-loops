@@ -10,7 +10,7 @@
       </aside>
 
       <main class="flex-1 overflow-y-auto border-t-2 border-rose-900 bg-stone-900">
-        <LoopsViewer />
+        <LoopsWorkspace />
       </main>
     </div>
 
@@ -20,8 +20,6 @@
 </template>
 
 <script lang="ts">
-import { Tone } from "tone/build/esm/core/Tone";
-
 export default defineComponent({
   data() {
     return {

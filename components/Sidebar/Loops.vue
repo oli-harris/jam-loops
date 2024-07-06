@@ -6,8 +6,6 @@
 </template>
 
 <script lang="ts">
-import { useLoopsStore } from "#imports";
-
 export default defineComponent({
   data() {
     return {

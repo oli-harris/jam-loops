@@ -1,4 +1,4 @@
-import type { App, Directive } from "vue";
+import type { Directive } from "vue";
 
 const rightClickDirective: Directive = {
   mounted(el: HTMLElement, binding) {

@@ -1,6 +1,6 @@
 <template>
   <div class="loopviewer grid gap-8 p-4">
-    <div v-for="(loop, position) in positionedLoops" :key="position">
+    <div v-for="(loop, position) in liveLoops" :key="position">
       <Loop :uuid="loop.uuid" />
     </div>
   </div>
@@ -14,8 +14,6 @@
 </style>
 
 <script lang="ts">
-import { useLoopsStore } from "#imports";
-
 export default defineComponent({
   data() {
     return {
@@ -33,8 +31,8 @@ export default defineComponent({
     ) {},
   },
   computed: {
-    positionedLoops(): Loop[] {
-      return this.loopsStore.positionedLoops;
+    liveLoops(): Loop[] {
+      return this.loopsStore.liveLoops;
     },
   },
 });
