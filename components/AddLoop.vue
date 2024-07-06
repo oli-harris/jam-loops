@@ -31,8 +31,8 @@
               @number-value="(numberValue) => (beatCount = numberValue)"
               class="text-lg"
               :default-value="8"
-              :max="useLoopsStore().maxBeats"
-              :min="2"
+              :max="useLoopsStore().loopConstraints.maxBeats"
+              :min="useLoopsStore().loopConstraints.minBeats"
             />
           </div>
           <div class="flex flex-row items-center gap-2">
@@ -41,8 +41,8 @@
               @number-value="(numberValue) => (trackCount = numberValue)"
               class="text-lg"
               :default-value="3"
-              :max="useLoopsStore().maxTracks"
-              :min="1"
+              :max="useLoopsStore().loopConstraints.maxTracks"
+              :min="useLoopsStore().loopConstraints.minTracks"
             />
           </div>
         </div>

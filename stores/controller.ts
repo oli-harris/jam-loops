@@ -1,4 +1,4 @@
-import { start, Loop, getTransport, ToneAudioBuffer, Player, getDraw, Volume } from "tone";
+import { start, Loop, getTransport, ToneAudioBuffer, Player, getDraw } from "tone";
 import type { Track } from "./loops";
 
 // Tonejs doesn't work well with states
@@ -49,7 +49,7 @@ export const useControllerStore = defineStore({
       this.setVolume();
 
       // Sets state of loops
-      useLoopsStore().loopsArray.forEach((loop) => {
+      useLoopsStore().liveLoops.forEach((loop) => {
         loop.currentBeat = 0;
         loop.isPlaying = true;
       });
@@ -66,14 +66,14 @@ export const useControllerStore = defineStore({
       getTransport().bpm.value = 120;
 
       // Resets beat to start
-      useLoopsStore().loopsArray.forEach((loop) => {
+      useLoopsStore().liveLoops.forEach((loop) => {
         loop.isPlaying = false;
         loop.resetBeat();
       });
     },
     addSampleBuffers() {
       // Adds new samples to tonejs.buffer and instantiates player
-      const samples = useLoopsStore().getAllSamples;
+      const samples = useLoopsStore().liveSamples;
 
       samples.forEach((sampleUuid: string) => this.bufferSample(sampleUuid));
     },
@@ -112,10 +112,8 @@ export const useControllerStore = defineStore({
         return `${1 / beats}m`;
       };
 
-      const rhythms = useLoopsStore().getAllRhythms;
-
       // Binds function to play beat at constant intervals of the beat duration
-      rhythms.forEach((loop) => {
+      useLoopsStore().liveLoops.forEach((loop) => {
         const beatCount = loop.beatCount;
         const loopUuid = loop.uuid;
 
@@ -148,10 +146,10 @@ export const useControllerStore = defineStore({
       if (!this.isInitialised) return;
       // If not buffered, buffer note
       this.bufferSample(sampleUuid).then(() => {
-        this.playNote(sampleUuid);
+        this.playNote(sampleUuid, 0);
       });
     },
-    playNote(sampleUuid: string, time: number = 0) {
+    playNote(sampleUuid: string, time: number) {
       if (!(sampleUuid in audioState)) return;
       const player = audioState[sampleUuid].player;
 

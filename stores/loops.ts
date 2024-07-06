@@ -1,44 +1,32 @@
-import type { PiniaPluginContext } from "pinia";
-import Loop from "~/components/Loop.vue";
-
 export const useLoopsStore = defineStore({
   id: "loopsStore",
   state: () => ({
-    loops: {} as Loops,
-    maxTracks: 5,
-    minTracks: 1,
-    maxBeats: 16,
-    minBeats: 2,
-  }),
-  persist: true,
-  getters: {
-    loop(state) {
-      return (uuid: string) => state.loops[uuid];
+    liveLoopsUUIDs: [] as string[], // Array of uuids of loops live to be played
+    loops: {} as Loops, // All of users loops
+    loopConstraints: {
+      maxTracks: 5,
+      minTracks: 1,
+      maxBeats: 16,
+      minBeats: 2,
     },
-    positionedLoops(): Loop[] {
-      // Returns an array of loops sorted by position
-      const loops = this.loopsArray;
-
+  }),
+  persist: {
+    storage: persistedState.localStorage,
+  },
+  getters: {
+    liveLoops(): Loop[] {
+      // Returns an array of live loops
+      return this.liveLoopsUUIDs.map((uuid) => this.loops[uuid]);
+    },
+    loopsArray(state): Loop[] {
+      const loops = Object.values(state.loops);
       loops.sort((a, b) => a.position - b.position);
 
       return loops;
     },
-    loopsArray(state): Loop[] {
-      const loops = Object.values(state.loops);
-
-      return loops;
-    },
-    getAllRhythms(state): { beatCount: number; uuid: string }[] {
-      // Seperates different loops of same beatcount into object and list of uuids
-      const loops = this.loopsArray;
-
-      const rhythms = loops.map((loop) => ({ beatCount: loop.beatCount, uuid: loop.uuid }));
-
-      return rhythms;
-    },
-    getAllSamples(): string[] {
+    liveSamples(): string[] {
       // Returns array of sample uuids
-      const samples = this.loopsArray.reduce((acc: string[], loop: Loop) => {
+      const samples = this.liveLoops.reduce((acc: string[], loop: Loop) => {
         loop.tracksData.forEach((track: Track) => acc.push(track.trackSample));
         return acc;
       }, []);
@@ -47,6 +35,7 @@ export const useLoopsStore = defineStore({
     },
   },
   actions: {
+    // Lifecycle of loops
     addEmptyLoop(loopTitle: string, beatCount: number, trackCount: number) {
       const uuid = crypto.randomUUID().toString();
 
@@ -69,11 +58,16 @@ export const useLoopsStore = defineStore({
       };
 
       this.loops[uuid] = newLoop;
+      this.liveLoopsUUIDs.push(uuid);
     },
-    deleteLoop(uuid: string) {
-      delete this.loops[uuid];
+    removeLiveLoop(uuid: string) {
+      useControllerStore().stop();
+
+      const index = this.liveLoopsUUIDs.indexOf(uuid);
+      this.liveLoopsUUIDs.splice(index);
     },
-    // Editing loops funcitonality
+
+    // Editing loops
     addTrack(uuid: string, position: number) {
       const loop = this.loops[uuid];
 
@@ -84,21 +78,38 @@ export const useLoopsStore = defineStore({
         beats: Array.from({ length: beatCount }, () => false),
       };
 
+      loop.trackCount += 1;
       loop.tracksData.splice(position, 0, trackData);
+
+      useControllerStore().stop();
     },
     removeTrack(uuid: string, position: number) {
+      const loop = this.loops[uuid];
+
+      loop.trackCount -= 1;
       this.loops[uuid].tracksData.splice(position, 1);
-    },
-    // Notes functionality
-    addNote(uuid: string, beat: number, track: number) {
-      const selectedLoop = this.loops[uuid];
 
-      selectedLoop.tracksData[track].beats[beat] = true;
+      useControllerStore().stop();
     },
-    removeNote(uuid: string, beat: number, track: number) {
-      const selectedLoop = this.loops[uuid];
+    addBeat(uuid: string, position: number) {
+      const loop = this.loops[uuid];
 
-      selectedLoop.tracksData[track].beats[beat] = false;
+      loop.beatCount += 1;
+      loop.tracksData.forEach((track) => {
+        track.beats.splice(position, 0, false);
+      });
+
+      useControllerStore().stop();
+    },
+    removeBeat(uuid: string, position: number) {
+      const loop = this.loops[uuid];
+
+      loop.beatCount -= 1;
+      loop.tracksData.forEach((track) => {
+        track.beats.splice(position, 1);
+      });
+
+      useControllerStore().stop();
     },
   },
 });
@@ -112,9 +123,10 @@ export interface Loop {
   onBeat: () => void; // Beat indexed from 0
   resetBeat: () => void;
   isPlaying: boolean;
-  position: number; // Zero index position in grid
+  position: number; // Zero index position in viewer
   loopTitle: string; // Name of loop
   beatCount: number; // Number of beats
+  trackCount: number; // Number of tracks
   currentBeat: number;
   tracksData: Track[]; // Contents of each track, starting from outer track
 }
