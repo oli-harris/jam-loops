@@ -6,13 +6,13 @@ Jam Loops is a web music app that allows you to create loops to build up a piece
 
 - Nuxt
 - Vue 3
-- Tonejs
 - Pinia
 - Tailwind
+- Tonejs
 
-## Features (to be implemented)
+## Features
 
-- Easily create polyrhythms
-- Add melodys using a MIDI device
-- Sync loops to server
-- Add instruments or use preexisting instrument packages
+- Easily create loops ✅
+- Polyrhythms support ✅
+- Right click menu ✅
+- Melodies
