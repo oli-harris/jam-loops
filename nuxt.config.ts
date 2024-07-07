@@ -24,6 +24,9 @@ export default defineNuxtConfig({
     "@pinia-plugin-persistedstate/nuxt",
     "@nuxt/icon",
   ],
+  icon: {
+    fallbackToApi: true,
+  },
   googleFonts: {
     families: {
       "Rubik Mono One": true, // Bug with google-fonts, { text: "JAM" } gives 400
