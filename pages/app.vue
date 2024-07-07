@@ -7,7 +7,7 @@
     <div class="font-poppins text-xl text-rose-700">This app is desktop only.</div>
   </div>
 
-  <App />
+  <JamApp />
 </template>
 
 <script lang="ts">
@@ -28,3 +28,15 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+.page-enter-active,
+.page-leave-active {
+  transition: all 0.4s;
+}
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+  filter: blur(1rem);
+}
+</style>
