@@ -82,7 +82,6 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-      NUXT_APP_BASE_URL: /jam-loops/
     runs-on: ubuntu-latest
     needs: build
     steps:
