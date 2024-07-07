@@ -10,7 +10,10 @@
       @contextmenu.prevent
     >
       <div v-for="menuItem in contextMenu">
-        <div v-if="menuItem.type === 'information'" class="mt-1 text-center font-black text-white">
+        <div
+          v-if="menuItem.type === 'information'"
+          class="mt-1 text-center font-extrabold text-white"
+        >
           {{ menuItem.information }}
         </div>
 

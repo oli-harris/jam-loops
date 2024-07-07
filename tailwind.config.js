@@ -10,9 +10,8 @@ export default {
   ],
   theme: {
     fontFamily: {
-      poppins: ["Poppins"],
-      kanit: ["Kanit"],
-      raleway: ["Raleway"],
+      rubik: ["Rubik"],
+      "rubik-mono": ["Rubik Mono One"],
     },
     extend: {},
   },

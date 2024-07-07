@@ -44,7 +44,7 @@
       </svg>
     </div>
 
-    <div class="mt-5 font-poppins text-lg text-rose-100">
+    <div class="mt-5 text-lg text-rose-100">
       <MetaTextBox :defaultText="loop.loopTitle" @textValue="setLoopTitle" />
     </div>
   </div>
@@ -236,6 +236,7 @@ const toggleNote = (event: MouseEvent) => {
 // Drag and drop tracks
 
 const dragOverBeat = (event: MouseEvent) => {
+  console.log("drag");
   event.preventDefault();
   if (!isAddingTrack) return;
 
@@ -250,6 +251,7 @@ const dragOverBeat = (event: MouseEvent) => {
 };
 
 const dragLeaveBeat = (event: MouseEvent) => {
+  console.log("drag leave");
   event.preventDefault();
   if (!isAddingTrack) return;
 
@@ -263,6 +265,7 @@ const dragLeaveBeat = (event: MouseEvent) => {
 };
 
 const dropTrack = (event: DragEvent) => {
+  console.log("drop");
   if (!isAddingTrack) return;
 
   // Assign sample to track

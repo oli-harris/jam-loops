@@ -2,7 +2,7 @@
   <div v-for="pack in packs" class="flex flex-col flex-wrap items-start">
     <MetaAnimateHover animation="animate__headShake">
       <div
-        class="animate__animated animate__fast animate__rollIn mb-2 select-auto text-xl font-black text-rose-600"
+        class="animate__animated animate__fast animate__rollIn mb-2 select-auto text-xl font-extrabold text-rose-600"
       >
         {{ pack.samplePackTitle }}
       </div>

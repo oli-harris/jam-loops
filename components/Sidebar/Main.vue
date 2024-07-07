@@ -1,10 +1,10 @@
 <template>
   <div class="relative flex min-h-full flex-col px-6 py-2">
     <!-- Navigation bar -->
-    <div class="flex flex-row justify-center font-poppins text-lg text-rose-100 transition-all">
+    <div class="flex flex-row justify-center text-lg text-rose-100 transition-all">
       <button
         class="hover:text-rose-400"
-        :class="{ ['font-black !text-rose-600 underline']: viewName == 'SidebarTracks' }"
+        :class="{ ['font-extrabold !text-rose-600 underline']: viewName == 'SidebarTracks' }"
         @click="switchView('SidebarTracks')"
       >
         Tracks
@@ -12,7 +12,7 @@
       <div class="mx-2">/</div>
       <button
         class="hover:text-rose-400"
-        :class="{ ['font-black !text-rose-600 underline']: viewName == 'SidebarMelodies' }"
+        :class="{ ['font-extrabold !text-rose-600 underline']: viewName == 'SidebarMelodies' }"
         @click="switchView('SidebarMelodies')"
       >
         Melodies
@@ -20,7 +20,7 @@
       <div class="mx-2">/</div>
       <button
         class="hover:text-rose-400"
-        :class="{ ['font-black !text-rose-600 underline']: viewName == 'SidebarLoops' }"
+        :class="{ ['font-extrabold !text-rose-600 underline']: viewName == 'SidebarLoops' }"
         @click="switchView('SidebarLoops')"
       >
         My Loops

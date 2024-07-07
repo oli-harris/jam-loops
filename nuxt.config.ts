@@ -8,6 +8,9 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+  app: {
+    pageTransition: { name: "page", mode: "out-in" },
+  },
   plugins: [
     { src: "~/plugins/rightClick-directive.client.ts", mode: "client" },
     { src: "~/plugins/rightClick-directive.server.ts", mode: "server" },
@@ -20,9 +23,8 @@ export default defineNuxtConfig({
   ],
   googleFonts: {
     families: {
-      Kanit: true,
-      Poppins: true,
-      Raleway: true,
+      "Rubik Mono One": true, // Bug with google-fonts, { text: "JAM" } gives 400
+      Rubik: [300, 400, 500, 600, 700, 800, 900],
     },
   },
   runtimeConfig: {

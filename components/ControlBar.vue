@@ -7,7 +7,7 @@
         animation="animate__rubberBand"
         classList="animate__delay-init"
       >
-        <div class="mr-4 cursor-default text-5xl font-black text-rose-600">JAM</div>
+        <div class="font-rubik-mono mr-4 cursor-default text-5xl text-rose-600">JAM</div>
       </MetaAnimateHover>
       <MetaTextBox
         class="text-lg text-rose-100"
@@ -16,7 +16,7 @@
         emptyValue="Untitled Project"
       />
     </div>
-    <div class="justify-self-center text-rose-100">
+    <div class="justify-self-center font-extrabold text-rose-100">
       <div class="flex flex-row items-center">
         <div class="mr-2">Tempo</div>
         <MetaNumberAdjuster
@@ -27,7 +27,7 @@
           @number-value="setTempo"
         />
 
-        <div class="ml-2">{{ playing ? "Playing" : "Paused" }}</div>
+        <div class="ml-5">{{ playing ? "Playing" : "Paused" }}</div>
         <div @click="togglePlay" v-show="!playing" class="h-10">
           <Icon name="ic:round-play-arrow" class="h-10 w-10 text-rose-600" />
         </div>
