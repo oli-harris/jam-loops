@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+const baseURL = process.env.DEPLOY_ENV === "GH_PAGES" ? "/jam-loops/" : "";
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ["~/assets/css/main.css"],
@@ -10,6 +12,7 @@ export default defineNuxtConfig({
   },
   app: {
     pageTransition: { name: "page", mode: "out-in" },
+    baseURL: "/jam-loops/",
   },
   plugins: [
     { src: "~/plugins/rightClick-directive.client.ts", mode: "client" },
