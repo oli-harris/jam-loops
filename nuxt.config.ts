@@ -1,5 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-const baseURL = process.env.DEPLOY_ENV === "GH_PAGES" ? "/jam-loops/" : "/";
+const baseURL = process.env.dev === "true" ? "/" : "/jam-loops/";
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
