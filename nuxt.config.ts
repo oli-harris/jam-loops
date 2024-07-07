@@ -12,7 +12,7 @@ export default defineNuxtConfig({
   },
   app: {
     pageTransition: { name: "page", mode: "out-in" },
-    baseURL: "/jam-loops/",
+    baseURL: baseURL,
   },
   plugins: [
     { src: "~/plugins/rightClick-directive.client.ts", mode: "client" },
