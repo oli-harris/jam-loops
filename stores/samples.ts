@@ -36,12 +36,16 @@ export const useSamplesStore = defineStore({
   },
   actions: {
     async fetchSamplePacks() {
-      const runtimeConfig = useRuntimeConfig();
-
       // Dont fetch if data already been fetched
       if (Object.keys(this.packs).length !== 0) return;
 
-      const response = await fetch(runtimeConfig.public.baseURL + "/samples/packs/packs.json");
+      const host = useRequestURL().origin;
+      const baseURL = useRuntimeConfig().app.baseURL;
+      const path = "samples/packs/packs.json";
+
+      const url = `${host}${baseURL}${path}`;
+
+      const response = await fetch(url);
 
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 

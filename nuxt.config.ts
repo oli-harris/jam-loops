@@ -1,5 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-const baseURL = process.env.DEPLOY_ENV === "GH_PAGES" ? "/jam-loops/" : "";
+const baseURL = process.env.DEPLOY_ENV === "GH_PAGES" ? "/jam-loops/" : "/";
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
@@ -28,11 +28,6 @@ export default defineNuxtConfig({
     families: {
       "Rubik Mono One": true, // Bug with google-fonts, { text: "JAM" } gives 400
       Rubik: [300, 400, 500, 600, 700, 800, 900],
-    },
-  },
-  runtimeConfig: {
-    public: {
-      baseURL: process.env.URL,
     },
   },
   ssr: false,
