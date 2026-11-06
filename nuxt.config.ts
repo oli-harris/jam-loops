@@ -1,6 +1,4 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-const baseURL = process.env.dev === "true" ? "/" : "/jam-loops/";
-
 export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ["~/assets/css/main.css"],
@@ -12,7 +10,6 @@ export default defineNuxtConfig({
   },
   app: {
     pageTransition: { name: "page", mode: "out-in" },
-    baseURL: baseURL,
   },
   plugins: [
     { src: "~/plugins/rightClick-directive.client.ts", mode: "client" },
@@ -25,7 +22,7 @@ export default defineNuxtConfig({
     "@nuxt/icon",
   ],
   icon: {
-    fallbackToApi: true,
+    provider: "iconify", // static site has no local icon API endpoint
   },
   googleFonts: {
     families: {

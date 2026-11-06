@@ -16,8 +16,9 @@ jobs:
           node-version: "20"
       # Pick your own package manager and build script
       - run: yarn install
-      - run: NUXT_APP_BASE_URL=/jam-loops/
       - run: npx nuxt build --preset github_pages
+        env:
+          NUXT_APP_BASE_URL: /jam-loops/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:

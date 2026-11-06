@@ -51,6 +51,11 @@ export const useSamplesStore = defineStore({
 
       const data: Packs = (await response.json()) || {};
 
+      const prefix = baseURL.replace(/\/$/, "");
+      Object.values(data).forEach((pack: any) =>
+        Object.values(pack.samples).forEach((s: any) => (s.samplePath = prefix + s.samplePath)),
+      );
+
       this.packs = data as Packs;
     },
   },
